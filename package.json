@@ -1,0 +1,50 @@
+{
+  "name": "@cedoor/movigo",
+  "version": "0.1.0",
+  "description": "Small JavaScript animation library.",
+  "author": {
+    "name": "Omar Desogus",
+    "email": "me@cedoor.dev",
+    "url": "https://cedoor.dev"
+  },
+  "license": "MIT",
+  "main": "dist/movigo.js",
+  "unpkg": "dist/movigo.min.js",
+  "jsdelivr": "dist/movigo.min.js",
+  "module": "src/index.js",
+  "scripts": {
+    "start": "npm test && live-server",
+    "pretest": "rollup -c",
+    "test": "tape 'test/**/*.js' | tap-spec",
+    "prepublishOnly": "rm -rf dist && npm run test"
+  },
+  "homepage": "https://github.com/cedoor/movigo#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cedoor/movigo.git"
+  },
+  "keywords": [
+    "js-animations",
+    "animations",
+    "animations-library"
+  ],
+  "bugs": {
+    "url": "https://github.com/cedoor/movigo/issues"
+  },
+  "devDependencies": {
+    "@babel/core": "7.9.0",
+    "@babel/plugin-proposal-class-properties": "7.8.3",
+    "@babel/plugin-proposal-object-rest-spread": "7.9.5",
+    "@babel/preset-env": "7.9.5",
+    "jsdom": "16.2.2",
+    "live-server": "1.2.1",
+    "rollup": "2.3.4",
+    "rollup-plugin-babel": "4.4.0",
+    "rollup-plugin-commonjs": "10.1.0",
+    "rollup-plugin-node-resolve": "5.2.0",
+    "rollup-plugin-terser": "5.3.0",
+    "standard": "14.3.3",
+    "tap-spec": "5.0.0",
+    "tape": "4.13.2"
+  }
+}
