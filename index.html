@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movigo library</title>
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+        }
+
+        div.box {
+            width: 100px;
+            height: 100px;
+            margin: 20px;
+        }
+    </style>
+</head>
+
+<body onload="loadScripts()">
+<div style="background-color: darkred" class="box"></div>
+<div style="background-color: darkolivegreen" class="box"></div>
+<div style="background-color: chocolate" class="box"></div>
+<div style="background-color: cadetblue" class="box"></div>
+</body>
+
+<script>
+  function loadScript (src) {
+    return new Promise(function (resolve, reject) {
+      const scriptElement = document.createElement('script')
+
+      scriptElement.onload = resolve
+      scriptElement.onerror = reject
+      scriptElement.src = src
+
+      document.head.appendChild(scriptElement)
+    })
+  }
+
+  async function loadScripts () {
+    try {
+      await loadScript('/dist/movigo.min.js')
+    } catch (error) {
+      console.warn('No local movigo script, loading it from unpkg CDN!')
+
+      await loadScript('https://unpkg.com/@cedoor/movigo')
+    }
+  }
+</script>
+</html>
