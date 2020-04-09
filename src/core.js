@@ -8,54 +8,43 @@ import { checkParameterTypes, getElement } from './utils'
 export function target (target) {
   checkParameterTypes(arguments, ['string'])
 
-  const options = {
-    element: getElement(target),
-    actions: []
-  }
-
-  return getActionFunctions(options)
+  return getTransformFunctions(getElement(target))
 }
 
 /**
- *
- * @param {object} options
- * @returns {object}
+ * Return transform properties as functions.
+ * @param {Element} element
+ * @param {string} transform
+ * @returns {*}
  */
-function getActionFunctions (options) {
-  function wrap (fun, value) {
-    checkParameterTypes([value], ['number'])
+function getTransformFunctions (element, transform = '') {
+  return [
+    'translateX', 'translateY',
+    'rotate',
+    'scale'
+  ].reduce(function (accumulator, transformFunction) {
+    accumulator[transformFunction] = function (...values) {
+      checkParameterTypes(values, 'string')
 
-    return fun(value, options)
-  }
+      const updatedTransform = transform + `${transformFunction}(${values.join(',')}) `
 
-  return {
-    translateX: (value) => wrap(translateX, value),
-    translateY: (value) => wrap(translateY, value)
-  }
+      return {
+        ...getTransformFunctions(element, updatedTransform),
+        animate: () => animate(element, updatedTransform)
+      }
+    }
+
+    return accumulator
+  }, {})
 }
 
-function translateX (value, options) {
-  options.actions.push(`translateX(${value}px)`)
+async function animate (element, transform) {
+  const duration = .5
 
-  return {
-    ...getActionFunctions(options),
-    animate: () => animate(options),
-  }
-}
+  element.style.transition = `transform ${duration}s linear`
+  element.style.transform = transform
 
-function translateY (value, options) {
-  options.actions.push(`translateY(${value}px)`)
-
-  return {
-    ...getActionFunctions(options),
-    animate: () => animate(options),
-  }
-}
-
-function animate (options) {
-  const length = options.actions.length
-
-  for (let i = 0; i < length; ++i) {
-    options.element.style.transform = options.actions[i]
-  }
+  return new Promise(function (resolve) {
+    element.ontransitionend = resolve
+  })
 }

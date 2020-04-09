@@ -47,14 +47,12 @@
     }
   }
 
-  function test () {
+  async function test () {
     const target = movigo.target('div')
 
-    target.translateY(100).animate()
+    await target.translateY('200px').translateX('200px').rotate('90deg').scale('1.2', '2').animate()
 
-    setTimeout(function () {
-      target.translateY(0).animate()
-    }, 1000)
+    target.translateY('0').animate()
   }
 </script>
 </html>

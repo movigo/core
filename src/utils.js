@@ -16,13 +16,13 @@ export function getElement (target) {
 /**
  * Check the parameter types and throw a type error if a parameter is not of the correct type.
  * @param {*[]} parameters
- * @param {string[]} types
+ * @param {string[] | string} types
  */
 export function checkParameterTypes (parameters, types) {
   const length = parameters.length
 
   for (let i = 0; i < length; ++i) {
-    const type = types[i]
+    const type = Array.isArray(types) ? types[i] : types
     const parameter = parameters[i]
 
     if (typeof parameter !== type) {
