@@ -35,8 +35,8 @@ const movigo = require('../dist/movigo')
     test.end()
   })
 
-  tape('Action functions should throw an exception if the parameter is not a number', function (test) {
-    const wrongTypes = ['string', true, () => null, {}, []]
+  tape('Action functions should throw an exception if the parameter is not a string', function (test) {
+    const wrongTypes = [1, true, () => null, {}, []]
 
     for (const wrongType of wrongTypes) {
       test.throws(function () {
@@ -48,7 +48,7 @@ const movigo = require('../dist/movigo')
   })
 
   tape('Action functions should return an object with action and animate functions', function (test) {
-    const target = movigo.target('div').translateX(100)
+    const target = movigo.target('div').translateX('100px')
 
     test.equal(typeof target['translateX'], 'function')
     test.equal(typeof target['animate'], 'function')
@@ -56,10 +56,10 @@ const movigo = require('../dist/movigo')
     test.end()
   })
 
-  tape('Animate function should return nothing', function (test) {
-    const target = movigo.target('div').translateX(100)
+  tape('Animate function should return a promise', function (test) {
+    const target = movigo.target('div').translateX('100px')
 
-    test.equal(target.animate(), undefined)
+    test.equal(typeof target.animate().then, 'function')
 
     test.end()
   })
