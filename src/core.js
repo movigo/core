@@ -1,4 +1,5 @@
 import { getElement } from './utils'
+import { checkParameterTypes } from './errors'
 
 /**
  * Return a function to transform an element.
@@ -6,6 +7,8 @@ import { getElement } from './utils'
  * @returns {function(...[*]=)}
  */
 export function animate (target) {
+  checkParameterTypes(arguments, ['string'])
+
   const element = getElement(target)
 
   return function (transform) {
