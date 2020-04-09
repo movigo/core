@@ -18,7 +18,7 @@
 </head>
 
 <body onload="loadScripts()">
-<div style="background-color: darkred" class="box"></div>
+<div onclick="test()" style="background-color: darkred" class="box"></div>
 <div style="background-color: darkolivegreen" class="box"></div>
 <div style="background-color: chocolate" class="box"></div>
 <div style="background-color: cadetblue" class="box"></div>
@@ -45,6 +45,16 @@
 
       await loadScript('https://unpkg.com/@cedoor/movigo')
     }
+  }
+
+  function test () {
+    const target = movigo.target('div')
+
+    target.translateY(100).animate()
+
+    setTimeout(function () {
+      target.translateY(0).animate()
+    }, 1000)
   }
 </script>
 </html>

@@ -4,7 +4,31 @@
  * @returns {Element}
  */
 export function getElement (target) {
-  return window.document.querySelector(target)
+  const element = window.document.querySelector(target)
+
+  if (element === null) {
+    throw Error(`'${target}' selector is not valid or the element does not exist.`)
+  }
+
+  return element
+}
+
+/**
+ * Check the parameter types and throw a type error if a parameter is not of the correct type.
+ * @param {*[]} parameters
+ * @param {string[]} types
+ */
+export function checkParameterTypes (parameters, types) {
+  const length = parameters.length
+
+  for (let i = 0; i < length; ++i) {
+    const type = types[i]
+    const parameter = parameters[i]
+
+    if (typeof parameter !== type) {
+      throw TypeError(`${capitalize(getOrdinalNumeral(i + 1))} parameter is not a ${type}.`)
+    }
+  }
 }
 
 /**
