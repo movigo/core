@@ -4,8 +4,14 @@
     <meta charset="UTF-8">
     <title>Movigo library</title>
     <style>
+        html, body {
+            height: 100%;
+        }
+
         body {
             display: flex;
+            justify-content: center;
+            align-items: center;
             margin: 0;
         }
 
@@ -18,10 +24,10 @@
 </head>
 
 <body onload="loadScripts()">
-<div onclick="test()" style="background-color: darkred" class="box"></div>
-<div style="background-color: darkolivegreen" class="box"></div>
-<div style="background-color: chocolate" class="box"></div>
-<div style="background-color: cadetblue" class="box"></div>
+<div onclick="startAnimation(this, 'translate', ['300px', '200px'])" style="background-color: darkred" class="box"></div>
+<div onclick="startAnimation(this, 'scale', ['2', '2'])" style="background-color: darkolivegreen" class="box"></div>
+<div onclick="startAnimation(this, 'rotate', ['110deg'])" style="background-color: chocolate" class="box"></div>
+<div onclick="startAnimation(this, 'skew', ['130deg', '180deg'])" style="background-color: cadetblue" class="box"></div>
 </body>
 
 <script>
@@ -47,10 +53,10 @@
     }
   }
 
-  async function test () {
-    const target = movigo.target('div')
+  async function startAnimation (element, transformation, values) {
+    const target = movigo.target(element)
 
-    await target.translateY('200px').translateX('200px').rotate('90deg').scale('1.2', '2').animate()
+    await target[transformation](...values).animate()
 
     target.translateY('0').animate()
   }
