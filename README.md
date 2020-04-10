@@ -1,6 +1,6 @@
 # Movigo
 
-Small JavaScript animation library.
+Small JavaScript animation library with chaining functions.
 
 ________________________________
 
