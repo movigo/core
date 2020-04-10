@@ -28,9 +28,6 @@
     "animations",
     "animations-library"
   ],
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  },
   "bugs": {
     "url": "https://github.com/cedoor/movigo/issues"
   },
