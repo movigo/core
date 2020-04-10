@@ -5,7 +5,16 @@ const movigo = require('../dist/movigo')
 ;(async function IIFE () {
   global.window = (await JSDOM.fromFile('index.html')).window
 
-  tape('Target function should throw an exception if the parameter is not a string', function (test) {
+  tape('Library should return a list of available transformations', function (test) {
+    const transformations = movigo.availableTransformations()
+
+    test.equal(Array.isArray(transformations), true)
+    test.equal(typeof transformations[0], 'string')
+
+    test.end()
+  })
+
+  tape('Target function should throw an exception if the parameter is not a string or a DOM element', function (test) {
     const wrongTypes = [1, true, () => null, {}, []]
 
     for (const wrongType of wrongTypes) {
@@ -20,6 +29,16 @@ const movigo = require('../dist/movigo')
   tape('Target function should throw an exception if the parameter is not a valid DOM selector', function (test) {
     test.throws(function () {
       movigo.target('#wrong')
+    })
+
+    test.end()
+  })
+
+  tape('Target function should work if the parameter is a valid DOM element', function (test) {
+    const element = window.document.querySelector('div')
+
+    test.doesNotThrow(function () {
+      movigo.target(element)
     })
 
     test.end()
