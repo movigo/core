@@ -76,8 +76,6 @@ function transformFunction (target, transformProperty, transformation, ...values
 async function animate (target, transformProperty) {
   const duration = .5
 
-  console.log(transformProperty)
-
   target.style.transition = `transform ${duration}s linear`
   target.style.transform = transformProperty
 
