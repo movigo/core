@@ -47,8 +47,6 @@
     try {
       await loadScript('/dist/movigo.min.js')
     } catch (error) {
-      console.warn('No local movigo script, loading it from unpkg CDN!')
-
       await loadScript('https://unpkg.com/@cedoor/movigo')
     }
   }
