@@ -14,46 +14,27 @@ export function getElement (target) {
 }
 
 /**
- * Check the parameter types and throw a type error if a parameter is not of the correct type.
+ * Check the built-in parameter types and throw a type error if a parameter is not of the correct type.
  * @param {*[]} parameters
  * @param {string[] | string} types
  */
-export function checkParameterTypes (parameters, types) {
+export function checkBuiltInTypes (parameters, types) {
   const length = parameters.length
 
   for (let i = 0; i < length; ++i) {
-    const type = Array.isArray(types) ? types[i] : types
-    const parameter = parameters[i]
+    const type = (Array.isArray(types) ? types[i] : types).split(' ')
 
-    if (typeof parameter !== type) {
-      throw TypeError(`${capitalize(getOrdinalNumeral(i + 1))} parameter is not a ${type}.`)
+    if (!type.includes(typeof parameters[i])) {
+      throw TypeError(`'${parameters[i]}' parameter is not a ${type}.`)
     }
   }
 }
 
 /**
- * Return the ordinal numeral of the correspondent number.
- * @param {number} n
- * @returns {string}
+ * Return true if the value passed as parameter is a DOM element.
+ * @param {Element} value
+ * @returns {boolean}
  */
-export function getOrdinalNumeral (n) {
-  switch (n) {
-    case 1:
-      return 'first'
-    case 2:
-      return 'second'
-    case 3:
-      return 'third'
-    case 4:
-      return 'fourth'
-  }
-}
-
-/**
- * Return the string with the first letter capitalized.
- * @param {string} s
- * @returns {string}
- */
-export function capitalize (s) {
-  return s.charAt(0).toUpperCase() + s.toLowerCase().slice(1)
+export function isDomElement (value) {
+  return !!value.nodeType
 }
