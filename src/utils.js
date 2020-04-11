@@ -16,16 +16,14 @@ export function getElement (target) {
 /**
  * Check the built-in parameter types and throw a type error if a parameter is not of the correct type.
  * @param {*[]} parameters
- * @param {string[] | string} types
+ * @param {string} type
  */
-export function checkBuiltInTypes (parameters, types) {
+export function checkBuiltInTypes (parameters, type) {
   const length = parameters.length
 
   for (let i = 0; i < length; ++i) {
-    const type = (Array.isArray(types) ? types[i] : types).split(' ')
-
     if (!type.includes(typeof parameters[i])) {
-      throw TypeError(`'${parameters[i]}' parameter is not a ${type}.`)
+      throw TypeError(`'${parameters[i]}' value is not a ${type}.`)
     }
   }
 }

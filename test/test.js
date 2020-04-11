@@ -14,6 +14,15 @@ const movigo = require('../dist/movigo')
     test.end()
   })
 
+  tape('Library should return a list of available option functions', function (test) {
+    const options = movigo.options()
+
+    test.equal(Array.isArray(options), true)
+    test.equal(typeof options[0], 'string')
+
+    test.end()
+  })
+
   tape('Target function should throw an exception if the parameter is not a string or a DOM element', function (test) {
     const wrongTypes = [1, true, () => null, {}, []]
 
@@ -44,23 +53,24 @@ const movigo = require('../dist/movigo')
     test.end()
   })
 
-  tape('Target function should return an object of only action functions', function (test) {
+  tape('Target function should return an object with action, option and animate functions', function (test) {
     const target = movigo.target('div')
     const actions = movigo.actions()
+    const options = movigo.options()
 
     test.equal(typeof target, 'object')
 
-    for (const action of actions) {
-      test.equal(typeof target[action], 'function')
+    for (const fun of [...actions, ...options]) {
+      test.equal(typeof target[fun], 'function')
     }
 
-    test.notEqual(typeof target['animate'], 'function')
+    test.equal(typeof target['animate'], 'function')
 
     test.end()
   })
 
-  tape('Action functions should throw an exception if the parameter is not a string', function (test) {
-    const wrongTypes = [1, true, () => null, {}, []]
+  tape('Action functions should throw an exception if the parameter is not a string or a number', function (test) {
+    const wrongTypes = [true, () => null, {}, []]
     const actions = movigo.actions()
 
     for (const wrongType of wrongTypes) {
@@ -74,11 +84,80 @@ const movigo = require('../dist/movigo')
     test.end()
   })
 
-  tape('Action functions should return an object with action and animate functions', function (test) {
+  tape('Action functions should return an object with action, option and animate functions', function (test) {
     const target = movigo.target('div').translate('100px', '100px')
+    const actions = movigo.actions()
+    const options = movigo.options()
 
-    test.equal(typeof target['translateX'], 'function')
+    for (const fun of [...actions, ...options]) {
+      test.equal(typeof target[fun], 'function')
+    }
+
     test.equal(typeof target['animate'], 'function')
+
+    test.end()
+  })
+
+  tape('Duration function should throw an exception if the parameter is not a number', function (test) {
+    const wrongTypes = ['string', true, () => null, {}, []]
+
+    for (const wrongType of wrongTypes) {
+      test.throws(function () {
+        movigo.target('div').duration(wrongType)
+      })
+    }
+
+    test.end()
+  })
+
+  tape('Delay function should throw an exception if the parameter is not a number', function (test) {
+    const wrongTypes = ['string', true, () => null, {}, []]
+
+    for (const wrongType of wrongTypes) {
+      test.throws(function () {
+        movigo.target('div').delay(wrongType)
+      })
+    }
+
+    test.end()
+  })
+
+  tape('Easing function should throw an exception if the parameter is not a string', function (test) {
+    const wrongTypes = [1, true, () => null, {}, []]
+
+    for (const wrongType of wrongTypes) {
+      test.throws(function () {
+        movigo.target('div').easing(wrongType)
+      })
+    }
+
+    test.end()
+  })
+
+  tape('Loop function should not get parameters or should get number parameter', function (test) {
+    const wrongTypes = ['string', true, () => null, {}, []]
+
+    for (const wrongType of wrongTypes) {
+      test.throws(function () {
+        movigo.target('div').loop(wrongType)
+      })
+    }
+
+    test.doesNotThrow(function () {
+      movigo.target('div').loop()
+    })
+
+    test.end()
+  })
+
+  tape('Option functions should return an object with action, option and animate functions', function (test) {
+    const target = movigo.target('div').duration(100)
+    const actions = movigo.actions()
+    const options = movigo.options()
+
+    for (const fun of [...actions, ...options]) {
+      test.equal(typeof target[fun], 'function')
+    }
 
     test.end()
   })

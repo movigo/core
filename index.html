@@ -24,10 +24,11 @@
 </head>
 
 <body onload="loadScripts()">
-<div onclick="startAnimation(this, 'translate', ['300px', '200px'])" style="background-color: darkred" class="box"></div>
-<div onclick="startAnimation(this, 'scale', ['2', '2'])" style="background-color: darkolivegreen" class="box"></div>
+<div onclick="startAnimation(this, 'translate', ['300px', '200px'])" style="background-color: darkred"
+     class="box"></div>
+<div onclick="startAnimation(this, 'scale', [2, 2])" style="background-color: darkolivegreen" class="box"></div>
 <div onclick="startAnimation(this, 'rotate', ['110deg'])" style="background-color: chocolate" class="box"></div>
-<div onclick="startAnimation(this, 'skew', ['130deg', '180deg'])" style="background-color: cadetblue" class="box"></div>
+<div onclick="startAnimation(this, 'skew', ['20deg', '20deg'])" style="background-color: cadetblue" class="box"></div>
 </body>
 
 <script>
@@ -45,7 +46,7 @@
 
   async function loadScripts () {
     try {
-      await loadScript('/dist/movigo.min.js')
+      await loadScript('/dist/movigo.js')
     } catch (error) {
       await loadScript('https://unpkg.com/@cedoor/movigo')
     }
@@ -54,9 +55,12 @@
   async function startAnimation (element, transformation, values) {
     const target = movigo.target(element)
 
-    await target[transformation](...values).animate()
+    await target[transformation](...values)
+      .duration(.8).delay(.5).easing('ease')
+      .loop(2)
+      .animate()
 
-    target.translateY('0').animate()
+    // target.animate()
   }
 </script>
 </html>

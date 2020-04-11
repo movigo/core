@@ -1,13 +1,34 @@
 import { checkBuiltInTypes, getElement, isDomElement } from './utils'
 
-// List of all available transformations.
-const transformations = [
-  'matrix',
-  'translate', 'translateX', 'translateY', 'translateZ',
-  'scale', 'scaleX', 'scaleY', 'scaleZ',
-  'rotate', 'rotateX', 'rotateY', 'rotateZ',
-  'skew', 'skewX', 'skewY'
-]
+/** Action and parameter definitions: '<functionName>: <parameterTypes>' **/
+
+// List of all available transformations with types.
+const availableTransformations = {
+  matrix: 'string number',
+  translate: 'string',
+  translateX: 'string',
+  translateY: 'string',
+  translateZ: 'string',
+  scale: 'string number',
+  scaleX: 'string number',
+  scaleY: 'string number',
+  scaleZ: 'string number',
+  rotate: 'string',
+  rotateX: 'string',
+  rotateY: 'string',
+  rotateZ: 'string',
+  skew: 'string',
+  skewX: 'string',
+  skewY: 'string'
+}
+
+// List of all available options with types.
+const availableOptions = {
+  duration: 'number',
+  delay: 'number',
+  easing: 'string',
+  loop: 'number'
+}
 
 /**
  * First chaining function to select DOM element (target) to animate.
@@ -16,74 +37,135 @@ const transformations = [
  * @returns {object}
  */
 export function target (target) {
-  if (isDomElement(target)) {
-    return getTransformFunctions(target)
+  // Default options.
+  const options = {
+    duration: .5,
+    delay: 0,
+    easing: 'linear',
+    loop: false
   }
 
-  checkBuiltInTypes([target], ['string'])
+  if (isDomElement(target)) {
+    return getFunctions(target, options, 'initial')
+  }
 
-  return getTransformFunctions(getElement(target))
+  checkBuiltInTypes([target], 'string')
+
+  return getFunctions(getElement(target), options, 'initial')
+}
+
+/**
+ *
+ * @param {Element} target
+ * @param {object} options
+ * @param {string} transform
+ * @returns {object}
+ */
+function getFunctions (target, options, transform) {
+  // Make a copy of options to save state in different function chains.
+  options = Object.assign({}, options)
+
+  return {
+    // Action functions.
+    ...getTransformFunctions(target, options, transform),
+    // Option functions.
+    ...getOptionFunctions(target, options, transform),
+    // Animate function.
+    animate: () => animate(target, options, transform)
+  }
 }
 
 /**
  * Return an object of functions, in which each function is a CSS transformation.
  * @param {Element} target
- * @param {string} transformProperty
+ * @param {object} options
+ * @param {string} transform
  * @returns {object}
  */
-function getTransformFunctions (target, transformProperty = '') {
-  return transformations.reduce(addTransformFunction.bind(null, target, transformProperty), {})
+function getTransformFunctions (target, options, transform) {
+  return Object.keys(availableTransformations).reduce(function addTransformFunction (accumulator, transformation, i) {
+    accumulator[transformation] = function transformFunction (...values) {
+      checkBuiltInTypes(values, Object.values(availableTransformations)[i])
+
+      // If transform property is in a 'initial' state set it as empty string for next transformations.
+      transform = transform === 'initial' ? '' : transform
+
+      return getFunctions(target, options, transform + `${transformation}(${values.join(',')}) `)
+    }
+
+    return accumulator
+  }, {})
 }
 
 /**
- * Add the transform function to an object of functions.
- * @param {Element} target
- * @param {string} transformProperty
- * @param {object} accumulator
- * @param {string} transformation
+ *
+ * @param target
+ * @param options
+ * @param transform
  * @returns {object}
  */
-function addTransformFunction (target, transformProperty, accumulator, transformation) {
-  accumulator[transformation] = transformFunction.bind(null, target, transformProperty, transformation)
+function getOptionFunctions (target, options, transform) {
+  return Object.keys(availableOptions).reduce(function (accumulator, option, i) {
+    accumulator[option] = function (...values) {
+      checkBuiltInTypes(values, Object.values(availableOptions)[i])
 
-  return accumulator
-}
+      // If the function has not parameters set option to 'true'.
+      options[option] = values.length > 0 ? values[0] : true
 
-/**
- * Add the transformation in the transform property in CSS format and return the object of action functions.
- * @param {Element} target
- * @param {string} transformProperty
- * @param {string} transformation
- * @param {string[]} values
- * @returns {object}
- */
-function transformFunction (target, transformProperty, transformation, ...values) {
-  checkBuiltInTypes(values, 'string')
+      return getFunctions(target, options, transform)
+    }
 
-  const updatedTransform = transformProperty + `${transformation}(${values.join(',')}) `
-
-  return {
-    ...getTransformFunctions(target, updatedTransform),
-    animate: () => animate(target, updatedTransform)
-  }
+    return accumulator
+  }, {})
 }
 
 /**
  * Last chaining function to start the animation. Set CSS properties and return a promise
  * resolved when the animation ends.
  * @param {Element} target
- * @param {string} transformProperty
+ * @param {object} options
+ * @param {string} transform
  * @returns {Promise<*>}
  */
-async function animate (target, transformProperty) {
-  const duration = .5
+async function animate (target, options, transform) {
+  // Save original CSS properties.
+  const originalTransition = target.style.transition
+  const originalTransform = target.style.transform
 
-  target.style.transition = `transform ${duration}s linear`
-  target.style.transform = transformProperty
+  // Create internal animate function when set transform CSS property
+  // and return a promise of the transition end.
+  function _animate (transform) {
+    target.style.transform = transform
 
-  return new Promise(function (resolve) {
-    target.ontransitionend = resolve
-  })
+    return new Promise(function (resolve) {
+      target.ontransitionend = resolve
+    })
+  }
+
+  // Set transition CSS property.
+  target.style.transition = `transform ${options.duration}s ${options.easing} ${options.delay}s`
+
+  if (options.loop !== false) {
+    while (options.loop) {
+      await _animate(transform)
+      await _animate(originalTransform)
+
+      options.loop = typeof options.loop === 'number' ? options.loop - 1 : options.loop
+    }
+  } else {
+    await _animate(transform)
+  }
+
+  // Set transition CSS property with original value.
+  target.style.transition = originalTransition
+}
+
+/**
+ * Return a copy of available option functions.
+ * @returns {string[]}
+ */
+export function options () {
+  return Object.keys(availableOptions)
 }
 
 /**
@@ -91,5 +173,5 @@ async function animate (target, transformProperty) {
  * @returns {string[]}
  */
 export function actions () {
-  return transformations.slice()
+  return Object.keys(availableTransformations)
 }
