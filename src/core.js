@@ -10,7 +10,8 @@ const transformations = [
 ]
 
 /**
- *
+ * First chaining function to select DOM element (target) to animate.
+ * Return an object with all the action functions (without the last 'animate' function).
  * @param {string | Element} target
  * @returns {object}
  */
@@ -25,7 +26,7 @@ export function target (target) {
 }
 
 /**
- * Return transform properties as functions.
+ * Return an object of functions, in which each function is a CSS transformation.
  * @param {Element} target
  * @param {string} transformProperty
  * @returns {object}
@@ -35,11 +36,11 @@ function getTransformFunctions (target, transformProperty = '') {
 }
 
 /**
- *
- * @param target
- * @param transformProperty
- * @param accumulator
- * @param transformation
+ * Add the transform function to an object of functions.
+ * @param {Element} target
+ * @param {string} transformProperty
+ * @param {object} accumulator
+ * @param {string} transformation
  * @returns {object}
  */
 function addTransformFunction (target, transformProperty, accumulator, transformation) {
@@ -49,11 +50,11 @@ function addTransformFunction (target, transformProperty, accumulator, transform
 }
 
 /**
- *
- * @param target
- * @param transformProperty
- * @param transformation
- * @param values
+ * Add the transformation in the transform property in CSS format and return the object of action functions.
+ * @param {Element} target
+ * @param {string} transformProperty
+ * @param {string} transformation
+ * @param {string[]} values
  * @returns {object}
  */
 function transformFunction (target, transformProperty, transformation, ...values) {
@@ -68,10 +69,11 @@ function transformFunction (target, transformProperty, transformation, ...values
 }
 
 /**
- *
- * @param target
- * @param transformProperty
- * @returns {Promise<unknown>}
+ * Last chaining function to start the animation. Set CSS properties and return a promise
+ * resolved when the animation ends.
+ * @param {Element} target
+ * @param {string} transformProperty
+ * @returns {Promise<*>}
  */
 async function animate (target, transformProperty) {
   const duration = .5
@@ -85,9 +87,9 @@ async function animate (target, transformProperty) {
 }
 
 /**
- * Return a copy of available transformation list.
+ * Return a copy of available action functions.
  * @returns {string[]}
  */
-export function availableTransformations () {
+export function actions () {
   return transformations.slice()
 }

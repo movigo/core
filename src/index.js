@@ -1,5 +1,5 @@
 // Export core functions.
 export {
   target,
-  availableTransformations
+  actions
 } from './core'
