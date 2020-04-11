@@ -5,11 +5,11 @@ const movigo = require('../dist/movigo')
 ;(async function IIFE () {
   global.window = (await JSDOM.fromFile('index.html')).window
 
-  tape('Library should return a list of available transformations', function (test) {
-    const transformations = movigo.availableTransformations()
+  tape('Library should return a list of available action functions', function (test) {
+    const actions = movigo.actions()
 
-    test.equal(Array.isArray(transformations), true)
-    test.equal(typeof transformations[0], 'string')
+    test.equal(Array.isArray(actions), true)
+    test.equal(typeof actions[0], 'string')
 
     test.end()
   })
@@ -46,9 +46,14 @@ const movigo = require('../dist/movigo')
 
   tape('Target function should return an object of only action functions', function (test) {
     const target = movigo.target('div')
+    const actions = movigo.actions()
 
     test.equal(typeof target, 'object')
-    test.equal(typeof target['translateX'], 'function')
+
+    for (const action of actions) {
+      test.equal(typeof target[action], 'function')
+    }
+
     test.notEqual(typeof target['animate'], 'function')
 
     test.end()
@@ -56,18 +61,21 @@ const movigo = require('../dist/movigo')
 
   tape('Action functions should throw an exception if the parameter is not a string', function (test) {
     const wrongTypes = [1, true, () => null, {}, []]
+    const actions = movigo.actions()
 
     for (const wrongType of wrongTypes) {
-      test.throws(function () {
-        movigo.target('div').translateX(wrongType)
-      })
+      for (const action of actions) {
+        test.throws(function () {
+          movigo.target('div')[action](wrongType)
+        })
+      }
     }
 
     test.end()
   })
 
   tape('Action functions should return an object with action and animate functions', function (test) {
-    const target = movigo.target('div').translateX('100px')
+    const target = movigo.target('div').translate('100px', '100px')
 
     test.equal(typeof target['translateX'], 'function')
     test.equal(typeof target['animate'], 'function')
@@ -76,7 +84,7 @@ const movigo = require('../dist/movigo')
   })
 
   tape('Animate function should return a promise', function (test) {
-    const target = movigo.target('div').translateX('100px')
+    const target = movigo.target('div').translate('100px', '100px')
 
     test.equal(typeof target.animate().then, 'function')
 
