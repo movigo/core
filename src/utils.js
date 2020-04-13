@@ -1,13 +1,13 @@
 /**
  * Return a DOM element.
- * @param {string} target
+ * @param {string} selector
  * @returns {Element}
  */
-export function getElement (target) {
-  const element = window.document.querySelector(target)
+export function getElement (selector) {
+  const element = window.document.querySelector(selector)
 
   if (element === null) {
-    throw Error(`'${target}' selector is not valid or the element does not exist.`)
+    throw Error(`'${selector}' selector is not valid or the element does not exist.`)
   }
 
   return element
