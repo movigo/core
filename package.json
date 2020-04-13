@@ -18,6 +18,9 @@
     "test": "tape 'test/**/*.js' | tap-spec",
     "prepublishOnly": "rm -rf dist && npm run test"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "homepage": "https://github.com/cedoor/movigo#readme",
   "repository": {
     "type": "git",
