@@ -69,21 +69,6 @@ const movigo = require('../dist/movigo')
     test.end()
   })
 
-  tape('Action functions should throw an exception if the parameter is not a string or a number', function (test) {
-    const wrongTypes = [true, () => null, {}, []]
-    const actions = movigo.actions()
-
-    for (const wrongType of wrongTypes) {
-      for (const action of actions) {
-        test.throws(function () {
-          movigo.target('div')[action](wrongType)
-        })
-      }
-    }
-
-    test.end()
-  })
-
   tape('Action functions should return an object with action, option and animate functions', function (test) {
     const target = movigo.target('div').translate('100px', '100px')
     const actions = movigo.actions()

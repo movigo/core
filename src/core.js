@@ -1,38 +1,6 @@
-import { checkBuiltInTypes, getElement, isDomElement } from './utils'
+import { checkBuiltInTypes, checkCSSPropertyValue, getElement, isDomElement } from './utils'
 
-/** Action and parameter definitions: '<functionName>: <parameterTypes>' **/
-
-// List of all available transformations with types.
-const availableTransformations = {
-  matrix: 'string number',
-  translate: 'string',
-  translateX: 'string',
-  translateY: 'string',
-  translateZ: 'string',
-  scale: 'string number',
-  scaleX: 'string number',
-  scaleY: 'string number',
-  scaleZ: 'string number',
-  rotate: 'string',
-  rotateX: 'string',
-  rotateY: 'string',
-  rotateZ: 'string',
-  skew: 'string',
-  skewX: 'string',
-  skewY: 'string'
-}
-
-// List of all available properties with types.
-const availableProperties = {
-  left: 'string',
-  right: 'string',
-  top: 'string',
-  bottom: 'string',
-  width: 'string',
-  height: 'string'
-}
-
-// List of all available options with types.
+// List of all available options with types ('<functionName>: <parameterTypes>').
 const availableOptions = {
   duration: 'number',
   delay: 'number',
@@ -40,9 +8,29 @@ const availableOptions = {
   loop: 'number'
 }
 
+// List of all available properties.
+const availableProperties = [
+  'margin', 'marginLeft', 'marginRight', 'marginTop', 'marginBottom',
+  'padding', 'paddingLeft', 'paddingRight', 'paddingTop', 'paddingBottom',
+  'border', 'borderRadius',
+  'left', 'right', 'top', 'bottom',
+  'width', 'height',
+  'color', 'backgroundColor',
+  'opacity',
+]
+
+// List of all available transformations.
+const availableTransformations = [
+  'matrix',
+  'translate', 'translateX', 'translateY', 'translateZ',
+  'scale', 'scaleX', 'scaleY', 'scaleZ',
+  'rotate', 'rotateX', 'rotateY', 'rotateZ',
+  'skew', 'skewX', 'skewY'
+]
+
 /**
  * First chaining function to select DOM element (target) to animate.
- * Return an object with all the action functions (without the last 'animate' function).
+ * Return an object with all the action functions.
  * @param {string | Element} target
  * @returns {object}
  */
@@ -56,12 +44,12 @@ export function target (target) {
   }
 
   if (isDomElement(target)) {
-    return getFunctions(target, options, {}, 'initial')
+    return getFunctions(target, options, {})
   }
 
   checkBuiltInTypes([target], 'string')
 
-  return getFunctions(getElement(target), options, {}, 'initial')
+  return getFunctions(getElement(target), options, {})
 }
 
 /**
@@ -69,10 +57,9 @@ export function target (target) {
  * @param {Element} target
  * @param {object} options
  * @param {object} properties
- * @param {string} transform
  * @returns {object}
  */
-function getFunctions (target, options, properties, transform) {
+function getFunctions (target, options, properties) {
   // #JS work with object references!
   // Make a copy of options and properties objects to save state in different function chains.
   options = Object.assign({}, options)
@@ -80,12 +67,12 @@ function getFunctions (target, options, properties, transform) {
 
   return {
     // Action functions.
-    ...getTransformFunctions(target, options, properties, transform),
-    ...getPropertyFunctions(target, options, properties, transform),
+    ...getTransformFunctions(target, options, properties),
+    ...getPropertyFunctions(target, options, properties),
     // Option functions.
-    ...getOptionFunctions(target, options, properties, transform),
+    ...getOptionFunctions(target, options, properties),
     // Animate function.
-    animate: () => animate(target, options, properties, transform)
+    animate: () => animate(target, options, properties)
   }
 }
 
@@ -94,18 +81,18 @@ function getFunctions (target, options, properties, transform) {
  * @param {Element} target
  * @param {object} options
  * @param {object} properties
- * @param {string} transform
  * @returns {object}
  */
-function getTransformFunctions (target, options, properties, transform) {
-  return Object.keys(availableTransformations).reduce(function addTransformFunction (accumulator, transformation, i) {
+function getTransformFunctions (target, options, properties) {
+  return availableTransformations.reduce(function addTransformFunction (accumulator, transformation, i) {
     accumulator[transformation] = function transformFunction (...values) {
-      checkBuiltInTypes(values, Object.values(availableTransformations)[i])
+      const value = `${transformation}(${values.join(',')}) `
 
-      // If transform property is in a 'initial' state set it as empty string for next transformations.
-      transform = transform === 'initial' ? '' : transform
+      checkCSSPropertyValue('transform', value.trim())
 
-      return getFunctions(target, options, properties, transform + `${transformation}(${values.join(',')}) `)
+      properties['transform'] = (properties['transform'] || '') + value
+
+      return getFunctions(target, options, properties)
     }
 
     return accumulator
@@ -117,17 +104,16 @@ function getTransformFunctions (target, options, properties, transform) {
  * @param {Element} target
  * @param {object} options
  * @param {object} properties
- * @param {string} transform
  * @returns {object}
  */
-function getPropertyFunctions (target, options, properties, transform) {
-  return Object.keys(availableProperties).reduce(function addPropertyFunction (accumulator, property, i) {
+function getPropertyFunctions (target, options, properties) {
+  return availableProperties.reduce(function addPropertyFunction (accumulator, property, i) {
     accumulator[property] = function propertyFunction (value) {
-      checkBuiltInTypes([value], Object.values(availableProperties)[i])
+      checkCSSPropertyValue(property, value)
 
       properties[property] = value
 
-      return getFunctions(target, options, properties, transform)
+      return getFunctions(target, options, properties)
     }
 
     return accumulator
@@ -139,18 +125,17 @@ function getPropertyFunctions (target, options, properties, transform) {
  * @param {Element} target
  * @param {object} options
  * @param {object} properties
- * @param {string} transform
  * @returns {object}
  */
-function getOptionFunctions (target, options, properties, transform) {
-  return Object.keys(availableOptions).reduce(function (accumulator, option, i) {
-    accumulator[option] = function (...values) {
+function getOptionFunctions (target, options, properties) {
+  return Object.keys(availableOptions).reduce(function addOptionFunction (accumulator, option, i) {
+    accumulator[option] = function optionFunction (...values) {
       checkBuiltInTypes(values, Object.values(availableOptions)[i])
 
       // If the function has not parameters set option to 'true'.
       options[option] = values.length > 0 ? values[0] : true
 
-      return getFunctions(target, options, properties, transform)
+      return getFunctions(target, options, properties)
     }
 
     return accumulator
@@ -196,11 +181,9 @@ function getOriginalProperties (target, properties) {
  * @param {string} transform
  * @returns {Promise<Element>}
  */
-function setProperties (target, properties, transform) {
+function setProperties (target, properties) {
   // Get the number of transitions (equal to the number of CSS properties to animate).
-  const numberOfTransitions = Object.keys(properties).length + 1
-
-  target.style.transform = transform
+  const numberOfTransitions = Object.keys(properties).length
 
   for (const property in properties) {
     target.style[property] = properties[property]
@@ -215,12 +198,10 @@ function setProperties (target, properties, transform) {
  * @param {Element} target
  * @param {object} options
  * @param {object} properties
- * @param {string} transform
  * @returns {Promise<void>}
  */
-async function animate (target, options, properties, transform) {
+async function animate (target, options, properties) {
   // Save original CSS properties.
-  const originalTransform = target.style.transform
   const originalProperties = getOriginalProperties(target, properties)
 
   // Set transition CSS properties.
@@ -229,13 +210,13 @@ async function animate (target, options, properties, transform) {
 
   if (options.loop !== false) {
     while (options.loop) {
-      await setProperties(target, properties, transform)
-      await setProperties(target, originalProperties, originalTransform)
+      await setProperties(target, properties)
+      await setProperties(target, originalProperties)
 
       options.loop = typeof options.loop === 'number' ? options.loop - 1 : options.loop
     }
   } else {
-    await setProperties(target, properties, transform)
+    await setProperties(target, properties)
   }
 
   // Set transition CSS property to 'inherit' value.
@@ -256,7 +237,7 @@ export function options () {
  */
 export function actions () {
   return [
-    ...Object.keys(availableTransformations),
-    ...Object.keys(availableProperties)
+    ...availableTransformations.slice(),
+    ...availableProperties.slice()
   ]
 }
