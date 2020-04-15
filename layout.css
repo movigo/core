@@ -10,6 +10,26 @@ body {
     margin: 0;
 }
 
+body, h1, h2, h3, h4, h5, h6, p, a, ul > li {
+    font-family: raleway, sans-serif;
+    color: var(--text-color);
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+/* CSS variables */
+
+:root {
+    --primary-color: #294056;
+    --secondary-color: #586c7f;
+    --tertiary-color: #dcd5c7;
+    --border-color: lightgray;
+    --text-color: #333333;
+}
+
 /* Github corner icon */
 
 .github-corner:hover .octo-arm {
@@ -37,35 +57,69 @@ body {
     }
 }
 
+@media (max-width: 500px) {
+    .github-corner:hover .octo-arm {
+        animation: none
+    }
+
+    .github-corner .octo-arm {
+        animation: octocat-wave 560ms ease-in-out
+    }
+}
+
 /* Header style */
 
 header {
     display: flex;
-    align-content: space-between;
+    justify-content: space-evenly;
     padding: 40px;
+    border-bottom: 2px solid var(--secondary-color);
 }
 
-header #logo {
-    flex-basis: 200px;
+header > div:first-child {
+    display: flex;
 }
 
 header #logo img {
-    width: 120px;
+    width: 150px;
     padding: 20px;
 }
 
 header #description {
-    flex: 1;
     padding: 20px 30px;
     max-width: 400px;
 }
 
+header #description h1 {
+    color: var(--primary-color);
+}
+
 header #strengths {
-    flex: 1;
+    display: flex;
+    align-items: center;
     padding: 20px;
 }
 
+header #strengths ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+header #strengths ul li {
+    margin-bottom: 6px;
+}
+
+header #strengths span {
+    color: darkolivegreen;
+    font-size: 20px;
+    margin-right: 5px;
+}
+
 /* Feature box style */
+
+#features {
+    padding: 40px 20px;
+}
 
 #features > div {
     display: flex;
@@ -81,16 +135,22 @@ header #strengths {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid lightgray;
+    border: 1px solid var(--border-color);
     margin-right: 20px;
     min-width: 500px;
     min-height: 300px;
 }
 
 #features .animation > div {
+    position: relative;
     width: 30px;
     height: 30px;
-    background-color: cadetblue;
+    background-color: var(--secondary-color);
+    opacity: .7;
+}
+
+#features .animation > div.circle {
+    border-radius: 100%;
 }
 
 #features .play-button {
@@ -98,10 +158,10 @@ header #strengths {
     top: 0;
     left: 0;
     cursor: pointer;
-    color: #343434;
     font-size: 60px;
     padding: 0 25px;
     user-select: none;
+    color: var(--secondary-color);
 }
 
 #features .play-button:active {
@@ -110,26 +170,18 @@ header #strengths {
 }
 
 #features .description {
-    border-bottom: 1px solid lightgray;
+    border-bottom: 1px solid var(--border-color);
 }
 
-#features .description,
-#features .code {
-    padding: 20px;
+#features .description {
+    padding: 5px;
 }
 
 /* Footer style */
 
 footer {
+    display: flex;
+    justify-content: space-between;
     padding: 40px;
-}
-
-@media (max-width: 500px) {
-    .github-corner:hover .octo-arm {
-        animation: none
-    }
-
-    .github-corner .octo-arm {
-        animation: octocat-wave 560ms ease-in-out
-    }
+    border-top: 2px solid var(--secondary-color);
 }

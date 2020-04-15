@@ -3,7 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Movigo library</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Small JavaScript animation library.">
+    <meta name="author" content="Omar Desogus">
+    <meta name="keywords" lang="en" content="js-animations animations animations-library">
+    <meta name="language" content="en"/>
+    <meta name="rating" content="general"/>
+    <link rel="icon" type="image/png" href="/resources/icon.png">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
     <link rel="stylesheet" href="./layout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad()</script>
 </head>
 
 <body onload="loadScripts()">
@@ -22,19 +34,20 @@
 
 <!-- Website header: logo | description | library strengths -->
 <header>
-    <div id="logo">
-        <img src="https://raw.githubusercontent.com/cedoor/ceditor/master/resources/icon.png">
-    </div>
-    <div id="description">
-        <h1>Movigo.js</h1>
-        <p>Description Description Description Description Description Description</p>
+    <div>
+        <div id="logo">
+            <img src="/resources/icon.png">
+        </div>
+        <div id="description">
+            <h1>Movigo.js</h1>
+            <p>Small JavaScript animation library.</p>
+        </div>
     </div>
     <div id="strengths">
         <ul>
-            <li>ciao</li>
-            <li>ciao</li>
-            <li>ciao</li>
-            <li>ciao</li>
+            <li><span>&#10004;</span> Light (~3kb)</li>
+            <li><span>&#10004;</span> Modern</li>
+            <li><span>&#10004;</span> Easy to use</li>
         </ul>
     </div>
 </header>
@@ -43,35 +56,59 @@
 <div id="features">
     <div>
         <div class="animation">
-            <span class="play-button">&#8227;</span>
-            <div></div>
+            <span onclick="animation1(this)" class="play-button">&#8227;</span>
+            <div class="circle"></div>
         </div>
         <div>
             <div class="description">
+                <h3>Actions</h3>
                 <p>Feature description</p>
             </div>
             <div class="code">
-                <code>Code...</code>
+                <pre>
+                    <code class="js">
+    await target
+        .width('100px').height('100px')
+        .animate()
+                    </code>
+                </pre>
             </div>
         </div>
     </div>
     <div>
         <div class="animation">
-            <span class="play-button">&#8227;</span>
+            <span onclick="animation2(this)" class="play-button">&#8227;</span>
             <div></div>
         </div>
         <div>
             <div class="description">
+                <h3>Options</h3>
                 <p>Feature description</p>
             </div>
             <div class="code">
-                <code>Code...</code>
+                <pre>
+                    <code class="js">
+    await target
+        .rotate('180deg')
+        .left('100px').top('100px')
+        .animate()
+                    </code>
+                </pre>
             </div>
         </div>
     </div>
 </div>
 
-<footer>Copyright (c) 2020 Omar Desogus</footer>
+<footer>
+    <div>
+        <a href="https://cedoor.dev" target="_blank">
+            &#9775; cedoor.dev
+        </a>
+    </div>
+    <div>
+        Copyright (c) 2020 Omar Desogus
+    </div>
+</footer>
 </body>
 
 <script>
@@ -93,19 +130,45 @@
     } catch (error) {
       await loadScript('https://unpkg.com/@cedoor/movigo')
     }
+
+    const target = movigo.target('#logo').easing('ease').duration(.5)
+
+    await target.opacity(.7).animate()
+    await target.opacity(1).animate()
   }
 
-  async function animate (element, transformation, values) {
-    const target = movigo.target(element)
+  function resetProperties (element) {
+    const properties = []
 
-    await target[transformation](...values)
-      .width('300px')
-      .height('200px')
-      .duration(.8).delay(.5).easing('ease')
-      .loop(2)
+    for (const property of element.style) {
+      properties.push(property)
+    }
+
+    for (const property of properties) {
+      element.style[property] = ''
+    }
+  }
+
+  async function animation1 (element) {
+    const target = movigo.target(element.nextElementSibling)
+
+    resetProperties(element.nextElementSibling)
+
+    await target
+      .width('100px').height('100px')
       .animate()
+  }
 
-    // target.animate()
+  async function animation2 (element) {
+    const target = movigo.target(element.nextElementSibling)
+
+    await resetProperties(element.nextElementSibling)
+
+    await target
+      .rotate('180deg')
+      .left('100px')
+      .top('100px')
+      .animate()
   }
 </script>
 </html>
