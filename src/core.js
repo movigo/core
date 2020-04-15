@@ -164,6 +164,24 @@ function whenTransitionsEnds (target, numberOfTransitions) {
  *
  * @param {Element} target
  * @param {object} properties
+ * @returns {boolean}
+ */
+function propertiesAreInStyle (target, properties) {
+  const style = window.getComputedStyle(target)
+
+  for (const property in properties) {
+    if (style[property] !== properties[property]) {
+      return true
+    }
+  }
+
+  return false
+}
+
+/**
+ *
+ * @param {Element} target
+ * @param {object} properties
  * @returns {object}
  */
 function getOriginalProperties (target, properties) {
@@ -198,29 +216,33 @@ function setProperties (target, properties) {
  * @param {Element} target
  * @param {object} options
  * @param {object} properties
- * @returns {Promise<void>}
+ * @returns {Promise<void | null>}
  */
 async function animate (target, options, properties) {
-  // Save original CSS properties.
-  const originalProperties = getOriginalProperties(target, properties)
+  if (propertiesAreInStyle(target, properties)) {
+    // Save original CSS properties.
+    const originalProperties = getOriginalProperties(target, properties)
 
-  // Set transition CSS properties.
-  target.style.transition = `all ${options.duration}s ${options.easing} ${options.delay}s`
-  target.style.transitionProperty = `transform, ${Object.keys(properties).join(',')}`
+    // Set transition CSS properties.
+    target.style.transition = `all ${options.duration}s ${options.easing} ${options.delay}s`
+    target.style.transitionProperty = `transform, ${Object.keys(properties).join(',')}`
 
-  if (options.loop !== false) {
-    while (options.loop) {
+    if (options.loop !== false) {
+      while (options.loop) {
+        await setProperties(target, properties)
+        await setProperties(target, originalProperties)
+
+        options.loop = typeof options.loop === 'number' ? options.loop - 1 : options.loop
+      }
+    } else {
       await setProperties(target, properties)
-      await setProperties(target, originalProperties)
-
-      options.loop = typeof options.loop === 'number' ? options.loop - 1 : options.loop
     }
-  } else {
-    await setProperties(target, properties)
+
+    // Set transition CSS property to 'inherit' value.
+    target.style.transition = target.style.transitionProperty = 'inherit'
   }
 
-  // Set transition CSS property to 'inherit' value.
-  target.style.transition = target.style.transitionProperty = 'inherit'
+  return null
 }
 
 /**
