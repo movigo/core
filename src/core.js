@@ -149,43 +149,6 @@ function getOptionFunctions (target, options, properties) {
 /**
  *
  * @param {Element} target
- * @param {number} numberOfTransitions
- * @returns {Promise<Element>}
- */
-function whenTransitionsEnds (target, numberOfTransitions) {
-  return new Promise(function (resolve) {
-    target.ontransitionend = function () {
-      numberOfTransitions--
-
-      if (numberOfTransitions === 0) {
-        resolve(target)
-      }
-    }
-  })
-}
-
-/**
- * Return true if the values of the properties to animate are different
- * than the current style, otherwise return false.
- * @param {Element} target
- * @param {object} properties
- * @returns {boolean}
- */
-function propertiesUpdateStyle (target, properties) {
-  const computedStyle = window.getComputedStyle(target)
-
-  for (const property in properties) {
-    if (computedStyle[property] !== properties[property]) {
-      return true
-    }
-  }
-
-  return false
-}
-
-/**
- *
- * @param {Element} target
  * @param {object} properties
  * @returns {object}
  */
@@ -204,14 +167,33 @@ function getOriginalProperties (target, properties) {
  * @returns {Promise<Element>}
  */
 function setProperties (target, properties) {
-  // Get the number of transitions (equal to the number of CSS properties to animate).
-  const numberOfTransitions = Object.keys(properties).length
+  return new Promise(function (resolve, reject) {
+    let transitionCreated = false
+    let numberOfTransitions = 0
 
-  for (const property in properties) {
-    target.style[property] = properties[property]
-  }
+    target.ontransitionrun = function () {
+      transitionCreated = true
+      numberOfTransitions++
+    }
 
-  return whenTransitionsEnds(target, numberOfTransitions)
+    target.ontransitionend = function () {
+      numberOfTransitions--
+
+      if (numberOfTransitions === 0) {
+        resolve()
+      }
+    }
+
+    setTimeout(function () {
+      if (!transitionCreated) {
+        reject('Animation actions produce no change in the current CSS.')
+      }
+    }, 100)
+
+    for (const property in properties) {
+      target.style[property] = properties[property]
+    }
+  })
 }
 
 /**
@@ -223,30 +205,26 @@ function setProperties (target, properties) {
  * @returns {Promise<void | null>}
  */
 async function animate (target, options, properties) {
-  if (propertiesUpdateStyle(target, properties)) {
-    // Save original CSS properties.
-    const originalProperties = getOriginalProperties(target, properties)
+  // Save original CSS properties.
+  const originalProperties = getOriginalProperties(target, properties)
 
-    // Set transition CSS properties.
-    target.style.transition = `all ${options.duration}s ${options.easing} ${options.delay}s`
-    target.style.transitionProperty = Object.keys(properties).map(camelCaseToDashCase).join(',')
+  // Set transition CSS properties.
+  target.style.transition = `all ${options.duration}s ${options.easing} ${options.delay}s`
+  target.style.transitionProperty = Object.keys(properties).map(camelCaseToDashCase).join(',')
 
-    if (options.loop !== false) {
-      while (options.loop) {
-        await setProperties(target, properties)
-        await setProperties(target, originalProperties)
-
-        options.loop = typeof options.loop === 'number' ? options.loop - 1 : options.loop
-      }
-    } else {
+  if (options.loop !== false) {
+    while (options.loop) {
       await setProperties(target, properties)
-    }
+      await setProperties(target, originalProperties)
 
-    // Set transition CSS property to 'inherit' value.
-    target.style.transition = target.style.transitionProperty = 'inherit'
+      options.loop = typeof options.loop === 'number' ? options.loop - 1 : options.loop
+    }
+  } else {
+    await setProperties(target, properties)
   }
 
-  return null
+  // Set transition CSS property to 'inherit' value.
+  target.style.transition = target.style.transitionProperty = 'inherit'
 }
 
 /**
