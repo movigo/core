@@ -17,7 +17,6 @@ body, h1, h2, h3, h4, h5, h6, p, a, ul > li {
 
 a {
     color: var(--primary-color);
-    text-decoration: none;
 }
 
 /* CSS variables */
@@ -143,9 +142,8 @@ header #strengths span {
 
 #features .animation > div {
     position: relative;
-    width: 30px;
-    height: 30px;
-    background-color: var(--secondary-color);
+    width: 50px;
+    height: 50px;
     opacity: .7;
 }
 
@@ -171,10 +169,13 @@ header #strengths span {
 
 #features .description {
     border-bottom: 1px solid var(--border-color);
+    padding: 5px;
 }
 
-#features .description {
-    padding: 5px;
+#features .code {
+    margin: 0;
+    font-size: 14px;
+    padding-bottom: 20px;
 }
 
 /* Footer style */

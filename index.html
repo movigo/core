@@ -5,7 +5,7 @@
     <title>Movigo library</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Small JavaScript animation library.">
+    <meta name="description" content="Ultralight JS library to animate your DOM elements.">
     <meta name="author" content="Omar Desogus">
     <meta name="keywords" lang="en" content="js-animations animations animations-library">
     <meta name="language" content="en"/>
@@ -13,12 +13,13 @@
     <link rel="icon" type="image/png" href="/resources/icon.png">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
     <link rel="stylesheet" href="./layout.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/default.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/zenburn.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad()</script>
+    <script src="https://unpkg.com/@cedoor/movigo"></script>
+    <script src="/dist/movigo.js"></script>
 </head>
 
-<body onload="loadScripts()">
+<body>
 <!-- GitHub corner icon -->
 <a class="github-corner" href="https://github.com/cedoor/movigo" target="_blank">
     <svg width="80" height="80" viewBox="0 0 250 250">
@@ -40,7 +41,12 @@
         </div>
         <div id="description">
             <h1>Movigo.js</h1>
-            <p>Small JavaScript animation library.</p>
+            <p>
+                Ultralight JS library to animate your DOM elements.
+                For installation and use of the library read the
+                <a href="https://github.com/cedoor/movigo#readme" target="_blank">README file</a>
+                on Github.
+            </p>
         </div>
     </div>
     <div id="strengths">
@@ -56,45 +62,62 @@
 <div id="features">
     <div>
         <div class="animation">
-            <span onclick="animation1(this)" class="play-button">&#8227;</span>
-            <div class="circle"></div>
+            <span onclick="animation1(this)" class="play-button" title="Play animation">&#8227;</span>
+            <div style="background-color: darkred"></div>
         </div>
         <div>
             <div class="description">
-                <h3>Actions</h3>
-                <p>Feature description</p>
+                <h3>Functions</h3>
+                <p>
+                    First function to call is always <b>target</b>, which takes a selector or a DOM element as input
+                    and return an object of functions. We can divide these functions into
+                    <b>action</b> functions and <b>option</b> functions (or simply action and options).
+                    Every action or option return other action and option functions with a final function:
+                    <b>animate</b>, that plays the animation and return a
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" target="_blank">promise</a>
+                    (fulfilled at the and of animation). Click on `play` button at top left to play animations.
+                </p>
             </div>
-            <div class="code">
-                <pre>
-                    <code class="js">
-    await target
-        .width('100px').height('100px')
-        .animate()
-                    </code>
-                </pre>
-            </div>
+            <pre class="code"><code class="js">
+    const target = movigo.target('div')
+
+    // or:
+
+    const element = document.querySelector('div')
+    const target = movigo.target(element)
+
+    target.duration(1) // Option function.
+
+    target.width('100px') // Action function.
+
+    const simpleAnimation = target.width('200px').duration(1)
+
+    // Create the animation and wait for the end.
+    await simpleAnimation.animate()
+            </code></pre>
         </div>
     </div>
     <div>
         <div class="animation">
-            <span onclick="animation2(this)" class="play-button">&#8227;</span>
-            <div></div>
+            <span onclick="animation2(this)" class="play-button" title="Play animation">&#8227;</span>
+            <div style="background-color: darkolivegreen" class="circle"></div>
         </div>
         <div>
             <div class="description">
-                <h3>Options</h3>
-                <p>Feature description</p>
+                <h3>Method chaining</h3>
+                <p>
+                    As you have seen Movigo use
+                    <a href="https://en.wikipedia.org/wiki/Method_chaining" target="_blank">method chaining</a>
+                    technique and save the state of the animation in each function. This means that you can break the
+                    chain and create new chains with additional functions by building different animations.
+                </p>
             </div>
-            <div class="code">
-                <pre>
-                    <code class="js">
-    await target
-        .rotate('180deg')
-        .left('100px').top('100px')
-        .animate()
-                    </code>
-                </pre>
-            </div>
+            <pre class="code"><code class="js">
+    const animation = target.duration(.5)
+
+    await animation.width('100px').animate()
+    await animation.height('100px').animate()
+            </code></pre>
         </div>
     </div>
 </div>
@@ -112,63 +135,32 @@
 </body>
 
 <script>
-  function loadScript (src) {
-    return new Promise(function (resolve, reject) {
-      const scriptElement = document.createElement('script')
-
-      scriptElement.onload = resolve
-      scriptElement.onerror = reject
-      scriptElement.src = src
-
-      document.head.appendChild(scriptElement)
-    })
-  }
-
-  async function loadScripts () {
-    try {
-      await loadScript('/dist/movigo.js')
-    } catch (error) {
-      await loadScript('https://unpkg.com/@cedoor/movigo')
-    }
-
-    const target = movigo.target('#logo').easing('ease').duration(.5)
-
-    await target.opacity(.7).animate()
-    await target.opacity(1).animate()
-  }
-
-  function resetProperties (element) {
-    const properties = []
-
-    for (const property of element.style) {
-      properties.push(property)
-    }
-
-    for (const property of properties) {
-      element.style[property] = ''
-    }
-  }
+  hljs.initHighlightingOnLoad()
 
   async function animation1 (element) {
     const target = movigo.target(element.nextElementSibling)
 
-    resetProperties(element.nextElementSibling)
+    try {
+      await target.width('50px').duration(.2).animate()
+    } catch (error) {
 
-    await target
-      .width('100px').height('100px')
-      .animate()
+    }finally {
+      await target.width('200px').duration(1).animate()
+    }
   }
 
   async function animation2 (element) {
     const target = movigo.target(element.nextElementSibling)
+    const animation = target.duration(.5)
 
-    await resetProperties(element.nextElementSibling)
+    try {
+      await target.width('50px').height('50px').duration(.2).animate()
+    } catch (error) {
 
-    await target
-      .rotate('180deg')
-      .left('100px')
-      .top('100px')
-      .animate()
+    } finally {
+      await animation.width('100px').animate()
+      await animation.height('100px').animate()
+    }
   }
 </script>
 </html>
