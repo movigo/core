@@ -113,6 +113,10 @@ function getPropertyFunctions (target, options, properties) {
 
       properties[property] = value
 
+      if (!target.style[property]) {
+        target.style[property] = window.getComputedStyle(target).getPropertyValue(property)
+      }
+
       return getFunctions(target, options, properties)
     }
 
