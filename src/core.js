@@ -1,4 +1,11 @@
-import { camelCaseToDashCase, checkBuiltInTypes, checkCSSPropertyValue, getElement, isDomElement } from './utils'
+import {
+  camelCaseToDashCase,
+  checkBuiltInTypes,
+  checkCSSPropertyValue,
+  copyObject,
+  getElement,
+  isDomElement
+} from './utils'
 
 // List of all available options with types ('<functionName>: <parameterTypes>').
 const availableOptions = {
@@ -53,26 +60,22 @@ export function target (target) {
 }
 
 /**
- *
+ * #JS work with object references!
+ * Make a copy of options and properties objects to save state in different function chains.
  * @param {Element} target
  * @param {object} options
  * @param {object} properties
  * @returns {object}
  */
 function getFunctions (target, options, properties) {
-  // #JS work with object references!
-  // Make a copy of options and properties objects to save state in different function chains.
-  options = Object.assign({}, options)
-  properties = Object.assign({}, properties)
-
   return {
     // Action functions.
-    ...getTransformFunctions(target, options, properties),
-    ...getPropertyFunctions(target, options, properties),
+    ...getTransformFunctions(target, copyObject(options), copyObject(properties)),
+    ...getPropertyFunctions(target, copyObject(options), copyObject(properties)),
     // Option functions.
-    ...getOptionFunctions(target, options, properties),
+    ...getOptionFunctions(target, copyObject(options), copyObject(properties)),
     // Animate function.
-    animate: () => animate(target, options, properties)
+    animate: () => animate(target, copyObject(options), copyObject(properties))
   }
 }
 

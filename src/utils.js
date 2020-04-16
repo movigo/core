@@ -62,3 +62,12 @@ export function isDomElement (value) {
 export function camelCaseToDashCase (s) {
   return s.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
 }
+
+/**
+ * Return a copy of an object, same content but different reference.
+ * @param {object} object
+ * @returns {object}
+ */
+export function copyObject (object) {
+  return Object.assign({}, object)
+}
