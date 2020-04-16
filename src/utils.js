@@ -53,3 +53,12 @@ export function checkCSSPropertyValue (property, value) {
 export function isDomElement (value) {
   return !!value.nodeType
 }
+
+/**
+ * Convert camel case string to dash case string.
+ * @param {string} s
+ * @returns {string}
+ */
+export function camelCaseToDashCase (s) {
+  return s.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
+}

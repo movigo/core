@@ -1,4 +1,4 @@
-import { checkBuiltInTypes, checkCSSPropertyValue, getElement, isDomElement } from './utils'
+import { camelCaseToDashCase, checkBuiltInTypes, checkCSSPropertyValue, getElement, isDomElement } from './utils'
 
 // List of all available options with types ('<functionName>: <parameterTypes>').
 const availableOptions = {
@@ -19,7 +19,7 @@ const availableProperties = [
   'opacity',
 ]
 
-// List of all available transformations.
+// List of all available transformations (additional properties).
 const availableTransformations = [
   'matrix',
   'translate', 'translateX', 'translateY', 'translateZ',
@@ -161,16 +161,17 @@ function whenTransitionsEnds (target, numberOfTransitions) {
 }
 
 /**
- *
+ * Return true if the values of the properties to animate are different
+ * than the current style, otherwise return false.
  * @param {Element} target
  * @param {object} properties
  * @returns {boolean}
  */
-function propertiesAreInStyle (target, properties) {
-  const style = window.getComputedStyle(target)
+function propertiesUpdateStyle (target, properties) {
+  const computedStyle = window.getComputedStyle(target)
 
   for (const property in properties) {
-    if (style[property] !== properties[property]) {
+    if (computedStyle[property] !== properties[property]) {
       return true
     }
   }
@@ -196,7 +197,6 @@ function getOriginalProperties (target, properties) {
  *
  * @param {Element} target
  * @param {object} properties
- * @param {string} transform
  * @returns {Promise<Element>}
  */
 function setProperties (target, properties) {
@@ -219,13 +219,13 @@ function setProperties (target, properties) {
  * @returns {Promise<void | null>}
  */
 async function animate (target, options, properties) {
-  if (propertiesAreInStyle(target, properties)) {
+  if (propertiesUpdateStyle(target, properties)) {
     // Save original CSS properties.
     const originalProperties = getOriginalProperties(target, properties)
 
     // Set transition CSS properties.
     target.style.transition = `all ${options.duration}s ${options.easing} ${options.delay}s`
-    target.style.transitionProperty = `transform, ${Object.keys(properties).join(',')}`
+    target.style.transitionProperty = Object.keys(properties).map(camelCaseToDashCase).join(',')
 
     if (options.loop !== false) {
       while (options.loop) {
