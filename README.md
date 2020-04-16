@@ -1,6 +1,6 @@
 # Movigo
 
-Small JavaScript animation library with chaining functions.
+Ultralight JS library to animate your DOM elements.
 
 ________________________________
 
