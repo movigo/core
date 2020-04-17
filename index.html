@@ -43,9 +43,9 @@
             <h1>Movigo.js</h1>
             <p>
                 Ultralight JS library to animate your DOM elements.
-                For installation and use of the library read the
-                <a href="https://github.com/cedoor/movigo#readme" target="_blank">README file</a>
-                on Github.
+                For the installation of the library read the
+                <a href="https://github.com/cedoor/movigo#readme" target="_blank">README</a>
+                file on Github.
             </p>
         </div>
     </div>
@@ -71,10 +71,11 @@
                 <p>
                     First function to call is always <b>target</b>, which takes a selector or a DOM element as input
                     and return an object of functions. We can divide these functions into
-                    <b>action</b> functions and <b>option</b> functions (or simply action and options).
-                    Every action or option return other action and option functions with a final function:
+                    <b>action</b> functions and <b>option</b> functions (or simply actions and options).
+                    Every action or option return other actions and options, with a final function:
                     <b>animate</b>, that plays the animation and return a
-                    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" target="_blank">promise</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+                       target="_blank">promise</a>
                     (fulfilled at the and of animation). Click on `play` button at top left to play animations.
                 </p>
             </div>
@@ -90,25 +91,25 @@
 
     target.width('100px') // Action function.
 
-    const simpleAnimation = target.width('200px').duration(1)
+    const animation = target.width('200px').duration(1)
 
     // Create the animation and wait for the end.
-    await simpleAnimation.animate()
+    await animation.animate()
             </code></pre>
         </div>
     </div>
     <div>
         <div class="animation">
             <span onclick="animation2(this)" class="play-button" title="Play animation">&#8227;</span>
-            <div style="background-color: darkolivegreen" class="circle"></div>
+            <div style="background-color: darkolivegreen"></div>
         </div>
         <div>
             <div class="description">
                 <h3>Method chaining</h3>
                 <p>
-                    As you have seen Movigo use
+                    As you can see Movigo use
                     <a href="https://en.wikipedia.org/wiki/Method_chaining" target="_blank">method chaining</a>
-                    technique and save the state of the animation in each function. This means that you can break the
+                    technique, and save the state of the animation in each function. This means that you can break the
                     chain and create new chains with additional functions by building different animations.
                 </p>
             </div>
@@ -117,6 +118,59 @@
 
     await animation.width('100px').animate()
     await animation.height('100px').animate()
+            </code></pre>
+        </div>
+    </div>
+    <div>
+        <div class="animation">
+            <span onclick="animation3(this)" class="play-button" title="Play animation">&#8227;</span>
+            <div style="background-color: chocolate"></div>
+        </div>
+        <div>
+            <div class="description">
+                <h3>Actions</h3>
+                <p>
+                    Actions correspond to CSS properties and their values must be the same values as CSS properties.
+                    To see a full list of available actions you can use <b>movigo.actions()</b> function.
+                    You can also see a full list of action functions in the
+                    <a href="https://github.com/cedoor/movigo#readme" target="_blank">README</a> file.
+                </p>
+            </div>
+            <pre class="code"><code class="js">
+    await target
+        .width('80px').height('80px')
+        .rotateZ('90deg').translateY('-100px')
+        .borderRadius('100%')
+        .animate()
+            </code></pre>
+        </div>
+    </div>
+    <div>
+        <div class="animation">
+            <span onclick="animation4(this)" class="play-button" title="Play animation">&#8227;</span>
+            <div style="background-color: darkcyan"></div>
+        </div>
+        <div>
+            <div class="description">
+                <h3>Options</h3>
+                <p>
+                    Options allow you to set some properties of the animations, such as duration,
+                    speed curve of the transition effect, delays or loops. In particular, a loop
+                    can be infinite or determined by a number.
+                    To see a full list of available options you can use <b>movigo.options()</b> function.
+                    You can also see a full list of option functions in the
+                    <a href="https://github.com/cedoor/movigo#readme" target="_blank">README</a> file.
+                </p>
+            </div>
+            <pre class="code"><code class="js">
+    await target
+        .duration(.5).delay(.5).easing('ease-in-out').loop(2)
+        .width('80px').height('80px')
+        .rotateZ('180deg')
+        .animate()
+
+    // Infinite loop:
+    // target.left('100px').loop().animate()
             </code></pre>
         </div>
     </div>
@@ -144,22 +198,61 @@
       await target.width('50px').duration(.2).animate()
     } catch (error) {
 
-    }finally {
+    } finally {
       await target.width('200px').duration(1).animate()
     }
   }
 
   async function animation2 (element) {
     const target = movigo.target(element.nextElementSibling)
-    const animation = target.duration(.5)
 
     try {
       await target.width('50px').height('50px').duration(.2).animate()
     } catch (error) {
 
     } finally {
+      const animation = target.duration(.5)
+
       await animation.width('100px').animate()
       await animation.height('100px').animate()
+    }
+  }
+
+  async function animation3 (element) {
+    const target = movigo.target(element.nextElementSibling)
+
+    try {
+      await target.duration(.2)
+        .width('50px').height('50px')
+        .rotateZ('0').translateY('0')
+        .borderRadius('0')
+        .animate()
+    } catch (error) {
+
+    } finally {
+      await target
+        .width('80px').height('80px')
+        .rotateZ('90deg').translateY('-100px')
+        .borderRadius('100%')
+        .animate()
+    }
+  }
+
+  async function animation4 (element) {
+    const target = movigo.target(element.nextElementSibling)
+
+    try {
+      await target.duration(.2)
+        .width('50px').height('50px')
+        .animate()
+    } catch (error) {
+
+    } finally {
+      await target
+        .duration(.5).delay(.5).easing('ease-in-out').loop(2)
+        .width('80px').height('80px')
+        .rotateZ('180deg')
+        .animate()
     }
   }
 </script>
