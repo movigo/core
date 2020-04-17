@@ -1,12 +1,31 @@
-# Movigo
+<p align="center">
+    <h1 align="center">
+        <img width="40" src="https://raw.githubusercontent.com/cedoor/movigo/master/resources/icon.png">
+        Movigo
+    </h1>
+    <p align="center">Ultralight JS library to animate your DOM elements.</p>
+</p>
+    
+<p align="center">
+    <a href="https://github.com/cedoor/movigo/blob/master/LICENSE" target="_blank">
+        <img src="https://img.shields.io/github/license/cedoor/movigo.svg?style=flat-square">
+    </a>
+    <a href="https://david-dm.org/cedoor/movigo?type=dev" target="_blank">
+        <img src="https://img.shields.io/david/dev/cedoor/movigo.svg?style=flat-square">
+    </a>
+</p>
 
-Ultralight JS library to animate your DOM elements.
+Movigo is a light and modern JS animation library which makes the creation of DOM element animations easier.
+Movigo use new ECMAScript features and the so-called method chaining technique, and save the state of the animation in each function.
+This means that you can break the chain and create new chains with additional functions by building different animations.
+Library functions correspond to specific CSS properties (actions) or to animation options (options).
+You can find more details and some examples of use on the [Movigo website](https://movigo.cedoor.dev)
+and in [Ceditor Movigo gists](https://ceditor.cedoor.dev/40d7fcbb1d31d30fa9932bfcdeff91cd/movigo.js).
 
 ________________________________
 
 ## :paperclip: Table of Contents
 - :hammer: [Install](#hammer-install)
-- :video_game: [Usage](#video_game-usage)
 - :chart_with_upwards_trend: [Development](#chart_with_upwards_trend-development)
   - :scroll: [Rules](#scroll-rules)
     - [Commits](#commits)
@@ -28,8 +47,6 @@ You can install movigo package with npm:
 You can also load it using a \<script> using the unpkg CDN:
     
     <script src="https://unpkg.com/@cedoor/movigo"></script>
-
-## :video_game: Usage
 
 ## :chart_with_upwards_trend: Development
 
