@@ -147,11 +147,13 @@ const movigo = require('../dist/movigo')
     test.end()
   })
 
-  tape('Animate function should return a promise', function (test) {
-    const target = movigo.target('div').translate('100px', '100px')
+  tape('Animate function should throw a promise exception for no animation changes', async function (test) {
+    const target = movigo.target('div')
 
-    test.equal(typeof target.animate().then, 'function')
-
-    test.end()
+    try {
+      await target.translate('100px', '100px').animate()
+    } catch (error) {
+      test.end()
+    }
   })
 })()

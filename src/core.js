@@ -70,12 +70,12 @@ export function target (target) {
 function getFunctions (target, options, properties) {
   return {
     // Action functions.
-    ...getTransformFunctions(target, copyObject(options), copyObject(properties)),
-    ...getPropertyFunctions(target, copyObject(options), copyObject(properties)),
+    ...getTransformFunctions(target, options, properties),
+    ...getPropertyFunctions(target, options, properties),
     // Option functions.
-    ...getOptionFunctions(target, copyObject(options), copyObject(properties)),
+    ...getOptionFunctions(target, options, properties),
     // Animate function.
-    animate: () => animate(target, copyObject(options), copyObject(properties))
+    animate: () => animate(target, options, properties)
   }
 }
 
@@ -93,9 +93,10 @@ function getTransformFunctions (target, options, properties) {
 
       checkCSSPropertyValue('transform', value.trim())
 
-      properties['transform'] = (properties['transform'] || '') + value
+      const propertiesCopy = copyObject(properties)
+      propertiesCopy['transform'] = (propertiesCopy['transform'] || '') + value
 
-      return getFunctions(target, options, properties)
+      return getFunctions(target, options, propertiesCopy)
     }
 
     return accumulator
@@ -114,13 +115,14 @@ function getPropertyFunctions (target, options, properties) {
     accumulator[property] = function propertyFunction (value) {
       checkCSSPropertyValue(property, value)
 
-      properties[property] = value
+      const propertiesCopy = copyObject(properties)
+      propertiesCopy[property] = value
 
       if (!target.style[property]) {
         target.style[property] = window.getComputedStyle(target).getPropertyValue(property)
       }
 
-      return getFunctions(target, options, properties)
+      return getFunctions(target, options, propertiesCopy)
     }
 
     return accumulator
@@ -140,9 +142,10 @@ function getOptionFunctions (target, options, properties) {
       checkBuiltInTypes(values, Object.values(availableOptions)[i])
 
       // If the function has not parameters set option to 'true'.
-      options[option] = values.length > 0 ? values[0] : true
+      const optionsCopy = copyObject(options)
+      optionsCopy[option] = values.length > 0 ? values[0] : true
 
-      return getFunctions(target, options, properties)
+      return getFunctions(target, optionsCopy, properties)
     }
 
     return accumulator
