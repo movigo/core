@@ -1,6 +1,7 @@
 // Export core functions.
 export {
-  target,
-  options,
-  actions
+  target
 } from './core'
+
+export { actions } from './actions'
+export { options } from './options'
