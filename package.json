@@ -1,6 +1,6 @@
 {
   "name": "@cedoor/movigo",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Ultralight JS library to animate your DOM elements.",
   "author": {
     "name": "Omar Desogus",
