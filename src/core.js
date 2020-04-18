@@ -156,21 +156,19 @@ function getOriginalProperties (target, properties) {
  */
 function createTransitions (target, properties) {
   return new Promise(function (resolve) {
-    let transitionCreated = false
     let numberOfTransitions = 0
 
-    target.ontransitionrun = function () {
-      transitionCreated = true
+    target.addEventListener('transitionrun', function () {
       numberOfTransitions++
-    }
+    })
 
-    target.ontransitionend = function () {
+    target.addEventListener('transitionend', function () {
       numberOfTransitions--
 
       if (numberOfTransitions === 0) {
         resolve()
       }
-    }
+    })
 
     for (const property in properties) {
       target.style[property] = properties[property]
