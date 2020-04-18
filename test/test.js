@@ -150,10 +150,8 @@ const movigo = require('../dist/movigo')
   tape('Animate function should throw a promise exception for no animation changes', async function (test) {
     const target = movigo.target('div')
 
-    try {
-      await target.translate('100px', '100px').animate()
-    } catch (error) {
-      test.end()
-    }
+    test.equal(typeof target.translate('100px', '100px').animate().then, 'function')
+
+    test.end()
   })
 })()

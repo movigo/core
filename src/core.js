@@ -155,7 +155,7 @@ function getOriginalProperties (target, properties) {
  * @returns {Promise<void>}
  */
 function createTransitions (target, properties) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve) {
     let transitionCreated = false
     let numberOfTransitions = 0
 
@@ -171,12 +171,6 @@ function createTransitions (target, properties) {
         resolve()
       }
     }
-
-    setTimeout(function () {
-      if (!transitionCreated) {
-        reject('Animation actions produce no change in the current CSS.')
-      }
-    }, 100)
 
     for (const property in properties) {
       target.style[property] = properties[property]
