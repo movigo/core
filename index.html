@@ -193,67 +193,63 @@
 
   async function animation1 (element) {
     const target = movigo.target(element.nextElementSibling)
+    const firstAnimation = element.nextElementSibling.style.transition !== 'inherit'
 
-    try {
+    if (!firstAnimation) {
       await target.width('50px').duration(.2).animate()
-    } catch (error) {
-
-    } finally {
-      await target.width('200px').duration(1).animate()
     }
+
+    await target.width('200px').duration(1).animate()
   }
 
   async function animation2 (element) {
     const target = movigo.target(element.nextElementSibling)
+    const firstAnimation = element.nextElementSibling.style.transition !== 'inherit'
 
-    try {
+    if (!firstAnimation) {
       await target.width('50px').height('50px').duration(.2).animate()
-    } catch (error) {
-
-    } finally {
-      const animation = target.duration(.5)
-
-      await animation.width('100px').animate()
-      await animation.height('100px').animate()
     }
+
+    const animation = target.duration(.5)
+
+    await animation.width('100px').animate()
+    await animation.height('100px').animate()
   }
 
   async function animation3 (element) {
     const target = movigo.target(element.nextElementSibling)
+    const firstAnimation = element.nextElementSibling.style.transition !== 'inherit'
 
-    try {
+    if (!firstAnimation) {
       await target.duration(.2)
         .width('50px').height('50px')
         .rotateZ('0').translateY('0')
         .borderRadius('0')
         .animate()
-    } catch (error) {
-
-    } finally {
-      await target
-        .width('80px').height('80px')
-        .rotateZ('90deg').translateY('-100px')
-        .borderRadius('100%')
-        .animate()
     }
+
+    await target
+      .width('80px').height('80px')
+      .rotateZ('90deg').translateY('-100px')
+      .borderRadius('100%')
+      .animate()
   }
 
   async function animation4 (element) {
     const target = movigo.target(element.nextElementSibling)
+    const firstAnimation = element.nextElementSibling.style.transition !== 'inherit'
 
-    try {
+    if (!firstAnimation) {
       await target.duration(.2)
         .width('50px').height('50px')
         .animate()
-    } catch (error) {
-
-    } finally {
-      await target
-        .duration(.5).delay(.5).easing('ease-in-out').loop(2)
-        .width('80px').height('80px')
-        .rotateZ('180deg')
-        .animate()
     }
+
+    await target
+      .duration(.5).delay(.5).easing('ease-in-out').loop(2)
+      .width('80px').height('80px')
+      .rotateZ('180deg')
+      .animate()
   }
 </script>
 </html>
