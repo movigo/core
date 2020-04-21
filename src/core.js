@@ -5,14 +5,14 @@ import {
   checkBuiltInTypes,
   checkCSSPropertyValue,
   copyObject,
-  getElement,
-  isDomElement
+  getElements,
+  isDomElementOrNodeList
 } from './utils'
 
 /**
  * First chaining function to select DOM element (target) to animate.
  * Return an object with all the action functions.
- * @param {string | Element} target
+ * @param {string | Element | NodeList} target
  * @returns {object}
  */
 export function target (target) {
@@ -24,31 +24,33 @@ export function target (target) {
     loop: false
   }
 
-  if (isDomElement(target)) {
-    return getAllChainFunctions(target, options, {})
+  if (isDomElementOrNodeList(target)) {
+    const targets = target.length ? target : [target]
+
+    return getAllChainFunctions(targets, options, {})
   }
 
   checkBuiltInTypes([target], 'string')
 
-  return getAllChainFunctions(getElement(target), options, {})
+  return getAllChainFunctions(getElements(target), options, {})
 }
 
 /**
  * Create an object of functions user for the function chaining.
- * @param {Element} target
+ * @param {Element[]} targets
  * @param {object} options
  * @param {object} properties
  * @returns {object}
  */
-function getAllChainFunctions (target, options, properties) {
+function getAllChainFunctions (targets, options, properties) {
   return {
     // Action functions.
-    ...createTransformFunctions(target, options, properties),
-    ...createPropertyFunctions(target, options, properties),
+    ...createTransformFunctions(targets, options, properties),
+    ...createPropertyFunctions(targets, options, properties),
     // Option functions.
-    ...createOptionFunctions(target, options, properties),
+    ...createOptionFunctions(targets, options, properties),
     // Animate function.
-    animate: () => animate(target, options, properties)
+    animate: () => animateAll(targets, options, properties)
   }
 }
 
@@ -72,12 +74,12 @@ function createChainFunctions (items, chainFunction) {
 
 /**
  * Create the transformation chain functions (CSS transform property).
- * @param {Element} target
+ * @param {Element[]} targets
  * @param {object} options
  * @param {object} properties
  * @returns {object}
  */
-function createTransformFunctions (target, options, properties) {
+function createTransformFunctions (targets, options, properties) {
   return createChainFunctions(availableTransformations, function transformFunction (values, transformation) {
     const value = `${transformation}(${values.join(',')}) `
 
@@ -87,18 +89,18 @@ function createTransformFunctions (target, options, properties) {
     const propertiesCopy = copyObject(properties)
     propertiesCopy['transform'] = (propertiesCopy['transform'] || '') + value
 
-    return getAllChainFunctions(target, options, propertiesCopy)
+    return getAllChainFunctions(targets, options, propertiesCopy)
   })
 }
 
 /**
  * Create the property chain functions (other CSS properties).
- * @param {Element} target
+ * @param {Element[]} targets
  * @param {object} options
  * @param {object} properties
  * @returns {object}
  */
-function createPropertyFunctions (target, options, properties) {
+function createPropertyFunctions (targets, options, properties) {
   return createChainFunctions(availableProperties, function addPropertyFunction ([value], property) {
     checkCSSPropertyValue(property, value)
 
@@ -106,22 +108,24 @@ function createPropertyFunctions (target, options, properties) {
     const propertiesCopy = copyObject(properties)
     propertiesCopy[property] = value
 
-    if (!target.style[property]) {
-      target.style[property] = window.getComputedStyle(target).getPropertyValue(property)
+    for (const target of targets) {
+      if (!target.style[property]) {
+        target.style[property] = window.getComputedStyle(target).getPropertyValue(property)
+      }
     }
 
-    return getAllChainFunctions(target, options, propertiesCopy)
+    return getAllChainFunctions(targets, options, propertiesCopy)
   })
 }
 
 /**
  * Create the option chain functions.
- * @param {Element} target
+ * @param {Element[]} targets
  * @param {object} options
  * @param {object} properties
  * @returns {object}
  */
-function createOptionFunctions (target, options, properties) {
+function createOptionFunctions (targets, options, properties) {
   return createChainFunctions(Object.keys(availableOptions), function addOptionFunction (values, option, i) {
     checkBuiltInTypes(values, Object.values(availableOptions)[i])
 
@@ -130,7 +134,7 @@ function createOptionFunctions (target, options, properties) {
     // If the function has not parameters set option to 'true'.
     optionsCopy[option] = values.length > 0 ? values[0] : true
 
-    return getAllChainFunctions(target, optionsCopy, properties)
+    return getAllChainFunctions(targets, optionsCopy, properties)
   })
 }
 
@@ -205,4 +209,17 @@ async function animate (target, options, properties) {
 
   // Set transition CSS property to 'inherit' value.
   target.style.transition = target.style.transitionProperty = 'inherit'
+}
+
+/**
+ *
+ * @param {Element[]} targets
+ * @param {object} options
+ * @param {object} properties
+ * @returns {Promise<void[]>}
+ */
+async function animateAll (targets, options, properties) {
+  return Promise.all(Array.from(targets).map(function (target) {
+    return animate(target, copyObject(options), copyObject(properties))
+  }))
 }

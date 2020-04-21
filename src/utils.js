@@ -3,14 +3,14 @@
  * @param {string} selector
  * @returns {Element}
  */
-export function getElement (selector) {
-  const element = window.document.querySelector(selector)
+export function getElements (selector) {
+  const elements = window.document.querySelectorAll(selector)
 
-  if (element === null) {
+  if (elements.length === 0) {
     throw Error(`'${selector}' selector is not valid or the element does not exist.`)
   }
 
-  return element
+  return elements
 }
 
 /**
@@ -46,12 +46,12 @@ export function checkCSSPropertyValue (property, value) {
 }
 
 /**
- * Return true if the value passed as parameter is a DOM element.
- * @param {Element} value
+ * Return true if the value passed as parameter is a DOM element or a list of elements.
+ * @param {Element | NodeList} elements
  * @returns {boolean}
  */
-export function isDomElement (value) {
-  return !!value.nodeType
+export function isDomElementOrNodeList (elements) {
+  return elements.nodeType || (elements.length && Array.from(elements).every(element => element.nodeType))
 }
 
 /**
