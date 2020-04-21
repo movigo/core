@@ -44,10 +44,12 @@ const movigo = require('../dist/movigo')
   })
 
   tape('Target function should work if the parameter is a valid DOM element', function (test) {
-    const element = window.document.querySelector('div')
+    test.doesNotThrow(function () {
+      movigo.target(window.document.querySelector('div'))
+    })
 
     test.doesNotThrow(function () {
-      movigo.target(element)
+      movigo.target(window.document.querySelector('header'))
     })
 
     test.end()
