@@ -30,7 +30,7 @@ export function target (target) {
     return getAllChainFunctions(targets, options, {})
   }
 
-  checkBuiltInTypes([target], 'string')
+  checkBuiltInTypes(target, 'string')
 
   return getAllChainFunctions(getElements(target), options, {})
 }
@@ -126,13 +126,26 @@ function createPropertyFunctions (targets, options, properties) {
  * @returns {object}
  */
 function createOptionFunctions (targets, options, properties) {
-  return createChainFunctions(Object.keys(availableOptions), function addOptionFunction (values, option, i) {
-    checkBuiltInTypes(values, Object.values(availableOptions)[i])
+  // Option functions always take only one parameter.
+  return createChainFunctions(Object.keys(availableOptions), function addOptionFunction ([value], option, i) {
+    checkBuiltInTypes(value, `${Object.values(availableOptions)[i]} function`)
 
     // Make a copy of options' object to save state in different function chains.
     const optionsCopy = copyObject(options)
-    // If the function has not parameters set option to 'true'.
-    optionsCopy[option] = values.length > 0 ? values[0] : true
+
+    if (typeof value === 'function') {
+      optionsCopy[option] = Array.from(targets).map(function (target, ii) {
+        const newValue = value(ii, target)
+
+        checkBuiltInTypes(newValue, Object.values(availableOptions)[i])
+
+        // If there is not value set option to 'true'.
+        return newValue === undefined ? true : newValue
+      })
+    } else {
+      // If there is not value set option to 'true'.
+      optionsCopy[option] = value === undefined ? true : value
+    }
 
     return getAllChainFunctions(targets, optionsCopy, properties)
   })
@@ -150,6 +163,18 @@ function getOriginalProperties (target, properties) {
 
     return accumulator
   }, {})
+}
+
+/**
+ *
+ * @param {object} options
+ * @param {number} i
+ */
+function setSpecificOptions (options, i) {
+  options.delay = Array.isArray(options.delay) ? options.delay[i] : options.delay
+  options.duration = Array.isArray(options.duration) ? options.duration[i] : options.duration
+  options.easing = Array.isArray(options.easing) ? options.easing[i] : options.easing
+  options.loop = Array.isArray(options.loop) ? options.loop[i] : options.loop
 }
 
 /**
@@ -186,11 +211,15 @@ function createTransitions (target, properties) {
  * @param {Element} target
  * @param {object} options
  * @param {object} properties
+ * @param {number} i
  * @returns {Promise<void>}
  */
-async function animate (target, options, properties) {
+async function animate (target, options, properties, i) {
   // Save original CSS properties.
   const originalProperties = getOriginalProperties(target, properties)
+
+  // Set any specific options.
+  setSpecificOptions(options, i)
 
   // Set transition CSS properties.
   target.style.transition = `all ${options.duration}s ${options.easing} ${options.delay}s`
@@ -219,7 +248,7 @@ async function animate (target, options, properties) {
  * @returns {Promise<void[]>}
  */
 async function animateAll (targets, options, properties) {
-  return Promise.all(Array.from(targets).map(function (target) {
-    return animate(target, copyObject(options), copyObject(properties))
+  return Promise.all(Array.from(targets).map(function (target, i) {
+    return animate(target, copyObject(options), copyObject(properties), i)
   }))
 }

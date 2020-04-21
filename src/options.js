@@ -3,7 +3,7 @@ export const availableOptions = {
   duration: 'number',
   delay: 'number',
   easing: 'string',
-  loop: 'number'
+  loop: 'number undefined'
 }
 
 /**
