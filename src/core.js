@@ -185,19 +185,35 @@ function setSpecificOptions (options, i) {
  */
 function createTransitions (target, properties) {
   return new Promise(function (resolve) {
-    let numberOfTransitions = 0
+    let transitions = 0
+    let created = true
 
-    target.addEventListener('transitionrun', function () {
-      numberOfTransitions++
-    })
+    function increaseTransitions () {
+      console.log(transitions)
+      created = true
+      transitions++
+    }
 
-    target.addEventListener('transitionend', function () {
-      numberOfTransitions--
+    function decreaseTransitions () {
+      transitions--
 
-      if (numberOfTransitions === 0) {
-        resolve()
+      if (transitions <= 0) {
+        resolveTransitions()
       }
-    })
+    }
+
+    function resolveTransitions () {
+      // Remove all event listeners.
+      target.removeEventListener('transitionrun', increaseTransitions)
+      target.removeEventListener('transitionend', decreaseTransitions)
+      target.removeEventListener('transitioncancel', resolveTransitions)
+      // Resolve transitions.
+      resolve()
+    }
+
+    target.addEventListener('transitionrun', increaseTransitions)
+    target.addEventListener('transitionend', decreaseTransitions)
+    target.addEventListener('transitioncancel', resolveTransitions)
 
     for (const property in properties) {
       target.style[property] = properties[property]
