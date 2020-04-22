@@ -1,7 +1,7 @@
 /**
  * Return a DOM element.
  * @param {string} selector
- * @returns {Element}
+ * @returns {NodeList}
  */
 export function getElements (selector) {
   const elements = window.document.querySelectorAll(selector)
@@ -66,4 +66,14 @@ export function camelCaseToDashCase (s) {
  */
 export function copyObject (object) {
   return Object.assign({}, object)
+}
+
+/**
+ * Create a unique ID using Math.random function.
+ * Math.random should be unique because of its seeding algorithm.
+ * Convert it to base 36 (numbers + letters), and grab the first 9 characters after the decimal.
+ * @returns {string}
+ */
+export function createID () {
+  return '_' + Math.random().toString(36).substr(2, 9)
 }

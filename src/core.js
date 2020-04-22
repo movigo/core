@@ -5,6 +5,7 @@ import {
   checkBuiltInTypes,
   checkCSSPropertyValue,
   copyObject,
+  createID,
   getElements,
   isDomElementOrNodeList
 } from './utils'
@@ -12,45 +13,43 @@ import {
 /**
  * First chaining function to select DOM element (target) to animate.
  * Return an object with all the action functions.
- * @param {string | Element | NodeList} target
+ * @param {string | Element | NodeList} elements
  * @returns {object}
  */
-export function target (target) {
+export function target (elements) {
   // Default options.
   const options = {
     duration: .5,
     delay: 0,
     easing: 'linear',
-    loop: false
+    loop: 0
   }
 
-  if (isDomElementOrNodeList(target)) {
-    const targets = target.length ? target : [target]
-
-    return getAllChainFunctions(targets, options, {})
+  if (isDomElementOrNodeList(elements)) {
+    return getAllChainFunctions(elements.length ? elements : [elements], options, {})
   }
 
-  checkBuiltInTypes(target, 'string')
+  checkBuiltInTypes(elements, 'string')
 
-  return getAllChainFunctions(getElements(target), options, {})
+  return getAllChainFunctions(getElements(elements), options, {})
 }
 
 /**
  * Create an object of functions user for the function chaining.
- * @param {Element[]} targets
+ * @param {NodeList} elements
  * @param {object} options
  * @param {object} properties
  * @returns {object}
  */
-function getAllChainFunctions (targets, options, properties) {
+function getAllChainFunctions (elements, options, properties) {
   return {
     // Action functions.
-    ...createTransformFunctions(targets, options, properties),
-    ...createPropertyFunctions(targets, options, properties),
+    ...createTransformFunctions(elements, options, properties),
+    ...createPropertyFunctions(elements, options, properties),
     // Option functions.
-    ...createOptionFunctions(targets, options, properties),
+    ...createOptionFunctions(elements, options, properties),
     // Animate function.
-    animate: () => animateAll(targets, options, properties)
+    animate: () => animateAll(elements, options, properties)
   }
 }
 
@@ -74,33 +73,33 @@ function createChainFunctions (items, chainFunction) {
 
 /**
  * Create the transformation chain functions (CSS transform property).
- * @param {Element[]} targets
+ * @param {NodeList} elements
  * @param {object} options
  * @param {object} properties
  * @returns {object}
  */
-function createTransformFunctions (targets, options, properties) {
+function createTransformFunctions (elements, options, properties) {
   return createChainFunctions(availableTransformations, function transformFunction (values, transformation) {
-    const value = `${transformation}(${values.join(',')}) `
+    const value = `${transformation}(${values.join(',')})`
 
-    checkCSSPropertyValue('transform', value.trim())
+    checkCSSPropertyValue('transform', value)
 
     // Make a copy of properties object to save state in different function chains.
     const propertiesCopy = copyObject(properties)
-    propertiesCopy['transform'] = (propertiesCopy['transform'] || '') + value
+    propertiesCopy['transform'] = propertiesCopy['transform'] ? `${propertiesCopy['transform']} ${value}` : value
 
-    return getAllChainFunctions(targets, options, propertiesCopy)
+    return getAllChainFunctions(elements, options, propertiesCopy)
   })
 }
 
 /**
  * Create the property chain functions (other CSS properties).
- * @param {Element[]} targets
+ * @param {NodeList} elements
  * @param {object} options
  * @param {object} properties
  * @returns {object}
  */
-function createPropertyFunctions (targets, options, properties) {
+function createPropertyFunctions (elements, options, properties) {
   return createChainFunctions(availableProperties, function addPropertyFunction ([value], property) {
     checkCSSPropertyValue(property, value)
 
@@ -108,24 +107,18 @@ function createPropertyFunctions (targets, options, properties) {
     const propertiesCopy = copyObject(properties)
     propertiesCopy[property] = value
 
-    for (const target of targets) {
-      if (!target.style[property]) {
-        target.style[property] = window.getComputedStyle(target).getPropertyValue(property)
-      }
-    }
-
-    return getAllChainFunctions(targets, options, propertiesCopy)
+    return getAllChainFunctions(elements, options, propertiesCopy)
   })
 }
 
 /**
  * Create the option chain functions.
- * @param {Element[]} targets
+ * @param {NodeList} elements
  * @param {object} options
  * @param {object} properties
  * @returns {object}
  */
-function createOptionFunctions (targets, options, properties) {
+function createOptionFunctions (elements, options, properties) {
   // Option functions always take only one parameter.
   return createChainFunctions(Object.keys(availableOptions), function addOptionFunction ([value], option, i) {
     checkBuiltInTypes(value, `${Object.values(availableOptions)[i]} function`)
@@ -134,32 +127,33 @@ function createOptionFunctions (targets, options, properties) {
     const optionsCopy = copyObject(options)
 
     if (typeof value === 'function') {
-      optionsCopy[option] = Array.from(targets).map(function (target, ii) {
+      optionsCopy[option] = Array.from(elements).map(function (target, ii) {
         const newValue = value(ii, target)
 
         checkBuiltInTypes(newValue, Object.values(availableOptions)[i])
 
-        // If there is not value set option to 'true'.
-        return newValue === undefined ? true : newValue
+        return newValue
       })
     } else {
       // If there is not value set option to 'true'.
-      optionsCopy[option] = value === undefined ? true : value
+      optionsCopy[option] = value
     }
 
-    return getAllChainFunctions(targets, optionsCopy, properties)
+    return getAllChainFunctions(elements, optionsCopy, properties)
   })
 }
 
 /**
- * Return original properties save in style object.
- * @param {Element} target
+ * Return actual properties of computed style object.
+ * @param {Element} element
  * @param {object} properties
  * @returns {object}
  */
-function getOriginalProperties (target, properties) {
+function getActualProperties (element, properties) {
+  const computedStyle = window.getComputedStyle(element)
+
   return Object.keys(properties).reduce(function (accumulator, property) {
-    accumulator[property] = target.style[property]
+    accumulator[property] = computedStyle[property]
 
     return accumulator
   }, {})
@@ -167,104 +161,88 @@ function getOriginalProperties (target, properties) {
 
 /**
  *
- * @param {object} options
- * @param {number} i
+ * @param {Element} element
+ * @param {object} properties
+ * @returns {{animationName: string, styleElement: HTMLStyleElement}}
  */
-function setSpecificOptions (options, i) {
-  options.delay = Array.isArray(options.delay) ? options.delay[i] : options.delay
-  options.duration = Array.isArray(options.duration) ? options.duration[i] : options.duration
-  options.easing = Array.isArray(options.easing) ? options.easing[i] : options.easing
-  options.loop = Array.isArray(options.loop) ? options.loop[i] : options.loop
+function createKeyFrame (element, properties) {
+  const styleElement = window.document.createElement('style')
+  const actualProperties = getActualProperties(element, properties)
+  const animationName = createID()
+
+  styleElement.innerHTML = `@keyframes ${animationName} {
+    from { ${Object.keys(actualProperties).map(p => `${camelCaseToDashCase(p)}: ${actualProperties[p]}`).join(';')} }
+    to { ${Object.keys(properties).map(p => `${camelCaseToDashCase(p)}: ${properties[p]}`).join(';')} }
+  }`
+
+  window.document.head.appendChild(styleElement)
+
+  return { animationName, styleElement }
 }
 
 /**
- * Update CSS properties and return a promise resolved when the transition ends.
- * @param {Element} target
- * @param {object} properties
- * @returns {Promise<void>}
+ *
+ * @param {object} options
+ * @param {number} i
  */
-function createTransitions (target, properties) {
-  return new Promise(function (resolve) {
-    let transitions = 0
-    let created = true
+function mapSpecificOptions (options, i) {
+  return Object.keys(options).reduce(function (accumulator, option) {
+    accumulator[option] = Array.isArray(options[option]) ? options[option][i] : options[option]
 
-    function increaseTransitions () {
-      console.log(transitions)
-      created = true
-      transitions++
-    }
-
-    function decreaseTransitions () {
-      transitions--
-
-      if (transitions <= 0) {
-        resolveTransitions()
-      }
-    }
-
-    function resolveTransitions () {
-      // Remove all event listeners.
-      target.removeEventListener('transitionrun', increaseTransitions)
-      target.removeEventListener('transitionend', decreaseTransitions)
-      target.removeEventListener('transitioncancel', resolveTransitions)
-      // Resolve transitions.
-      resolve()
-    }
-
-    target.addEventListener('transitionrun', increaseTransitions)
-    target.addEventListener('transitionend', decreaseTransitions)
-    target.addEventListener('transitioncancel', resolveTransitions)
-
-    for (const property in properties) {
-      target.style[property] = properties[property]
-    }
-  })
+    return accumulator
+  }, {})
 }
 
 /**
  * Last chaining function that start the animation. Set CSS properties
  * creating transitions and return a promise resolved when the animation ends.
- * @param {Element} target
+ * @param {Element} element
  * @param {object} options
  * @param {object} properties
  * @param {number} i
  * @returns {Promise<void>}
  */
-async function animate (target, options, properties, i) {
-  // Save original CSS properties.
-  const originalProperties = getOriginalProperties(target, properties)
+async function animate (element, options, properties, i) {
+  if (element.style.animationPlayState !== 'running') {
+    const { animationName, styleElement } = createKeyFrame(element, properties)
 
-  // Set any specific options.
-  setSpecificOptions(options, i)
+    // Map any specific options.
+    const { duration, easing, delay, loop } = mapSpecificOptions(options, i)
 
-  // Set transition CSS properties.
-  target.style.transition = `all ${options.duration}s ${options.easing} ${options.delay}s`
-  target.style.transitionProperty = Object.keys(properties).map(camelCaseToDashCase).join(',')
+    element.style.animation = `${animationName} ${duration}s ${easing} ${delay}s ${loop || 'infinite'}`
+    element.style.animationIterationCount = typeof loop === 'undefined' ? 'infinite' : loop === 0 ? 1 : loop * 2
+    element.style.animationDirection = 'alternate'
 
-  if (options.loop !== false) {
-    while (options.loop) {
-      await createTransitions(target, properties)
-      await createTransitions(target, originalProperties)
+    await new Promise(function (resolve) {
+      element.addEventListener('animationend', resolveAnimation)
 
-      options.loop = typeof options.loop === 'number' ? options.loop - 1 : options.loop
+      function resolveAnimation () {
+        resolve()
+        element.removeEventListener('animationend', resolveAnimation)
+      }
+    })
+
+    if (loop === 0) {
+      for (const property in properties) {
+        element.style[property] = properties[property]
+      }
     }
-  } else {
-    await createTransitions(target, properties)
-  }
 
-  // Set transition CSS property to 'inherit' value.
-  target.style.transition = target.style.transitionProperty = 'inherit'
+    element.style.animationPlayState = 'paused'
+
+    styleElement.remove()
+  }
 }
 
 /**
  *
- * @param {Element[]} targets
+ * @param {NodeList} elements
  * @param {object} options
  * @param {object} properties
  * @returns {Promise<void[]>}
  */
-async function animateAll (targets, options, properties) {
-  return Promise.all(Array.from(targets).map(function (target, i) {
-    return animate(target, copyObject(options), copyObject(properties), i)
+async function animateAll (elements, options, properties) {
+  return Promise.all(Array.from(elements).map(function (element, i) {
+    return animate(element, copyObject(options), copyObject(properties), i)
   }))
 }
