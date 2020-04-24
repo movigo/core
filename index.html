@@ -177,21 +177,83 @@
     <div>
         <div class="animation">
             <span onclick="animation5(this)" class="play-button" title="Play animation">&#8227;</span>
-            <div style="width: 300px; height: 300px; border: 1px solid lightgray">
+            <div id="list-animation">
                 <ul>
-                    <li>Hello world</li>
-                    <li>Hello world</li>
-                    <li>Hello world</li>
-                    <li>Hello world</li>
-                    <li>Hello world</li>
-                    <li>Hello world</li>
-                    <li>Hello world</li>
+                    <li>
+                        <div></div>
+                        <div></div>
+                    </li>
+                    <li>
+                        <div></div>
+                        <div></div>
+                    </li>
+                    <li>
+                        <div></div>
+                        <div></div>
+                    </li>
+                    <li>
+                        <div></div>
+                        <div></div>
+                    </li>
+                    <li>
+                        <div></div>
+                        <div></div>
+                    </li>
+                    <li>
+                        <div></div>
+                        <div></div>
+                    </li>
+                    <li>
+                        <div></div>
+                        <div></div>
+                    </li>
                 </ul>
             </div>
         </div>
         <div>
             <div class="description">
-                <h3>Title</h3>
+                <h3>List</h3>
+                <p>
+                    ...
+                </p>
+            </div>
+            <pre class="code"><code class="js">
+            </code></pre>
+        </div>
+    </div>
+    <div>
+        <div class="animation">
+            <span onclick="animation6(this)" class="play-button" title="Play animation">&#8227;</span>
+            <div id="text-animation">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+                ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            </div>
+        </div>
+        <div>
+            <div class="description">
+                <h3>Text</h3>
+                <p>
+                    ...
+                </p>
+            </div>
+            <pre class="code"><code class="js">
+            </code></pre>
+        </div>
+    </div>
+    <div>
+        <div class="animation">
+            <span onclick="animation7(this)" class="play-button" title="Play animation">&#8227;</span>
+            <div id="focus-animation">
+                <img src="https://cdn.audleytravel.com/-/-/79/1338050-colosseum-rome.jpg">
+                <img src="https://4.bp.blogspot.com/-V9lFhJJZPwI/UQgN0JXUDDI/AAAAAAAAjwQ/ZgSE0j8w-ZQ/s1600/indie-paris-eiffel-tower-jpg-1189976.jpg">
+                <img src="http://athenaposters.ca/wp-content/uploads/2017/05/2400-0764-London-Big-Ben-36x24.jpg">
+                <img src="https://footage.framepool.com/shotimg/qf/874025235-atom-model-atomium-brussels-sfere-form.jpg">
+            </div>
+        </div>
+        <div>
+            <div class="description">
+                <h3>Focus</h3>
                 <p>
                     ...
                 </p>
@@ -266,15 +328,70 @@
     const elements = element.nextElementSibling.querySelectorAll('li')
     const target = movigo.target(elements)
 
-    await target.duration(.1)
-      .translateY('50px')
-      .animate()
+    for (const element of elements) {
+      element.style.transform = 'translateY(80px)'
+      element.style.opacity = '0'
+    }
 
     await target
       .duration(.6)
       .delay(i => (i + 1) * .1)
       .easing('cubic-bezier(0.34, 1.56, 0.64, 1)')
+      .opacity(1)
       .translateY('0px')
+      .animate()
+  }
+
+  async function animation6 (element) {
+    const originalText = element.nextElementSibling.innerText
+
+    element.nextElementSibling.innerHTML = originalText.split('').reduce((a, l) => a += l === ' ' ? l : `<span>${l}</span>`, '')
+
+    const elements = element.nextElementSibling.querySelectorAll('span')
+
+    for (const element of elements) {
+      element.style.opacity = '0'
+    }
+
+    const target = movigo.target(elements)
+
+    await target
+      .duration(.5)
+      .delay(i => (i + 1) * .05)
+      .easing('cubic-bezier(0.34, 1.56, 0.64, 1)')
+      .opacity(1)
+      .animate()
+
+    element.nextElementSibling.innerText = originalText
+  }
+
+  async function animation7 (element) {
+    const randomNumber = Math.floor(Math.random() * 3 + 1)
+    const focusElement = element.nextElementSibling.querySelector(`img:nth-child(${randomNumber})`)
+    const elements = Array.from(element.nextElementSibling.querySelectorAll('img'))
+
+    await movigo.target(elements)
+      .easing('cubic-bezier(0.34, 1.56, 0.64, 1)')
+      .scale(1, 1)
+      .filter('brightness(100%)')
+      .animate()
+
+    elements.splice(elements.indexOf(focusElement), 1)
+
+    focusElement.style.zIndex = '2'
+
+    movigo.target(focusElement)
+      .easing('cubic-bezier(0.34, 1.56, 0.64, 1)')
+      .scale(2.2, 2.2)
+      .animate()
+
+    for (const element of elements) {
+      element.style.zIndex = '1'
+    }
+
+    movigo.target(elements)
+      .easing('cubic-bezier(0.34, 1.56, 0.64, 1)')
+      .filter('brightness(60%) blur(1px)')
       .animate()
   }
 </script>
