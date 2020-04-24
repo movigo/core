@@ -161,23 +161,18 @@ function getActualProperties (element, properties) {
 
 /**
  *
- * @param {Element} element
+ * @param {Element} styleElement
  * @param {object} properties
- * @returns {{animationName: string, styleElement: HTMLStyleElement}}
+ * @returns {string}
  */
-function createKeyFrame (element, properties) {
-  const styleElement = window.document.createElement('style')
-  const actualProperties = getActualProperties(element, properties)
+function createKeyFrame (styleElement, properties) {
   const animationName = createID()
 
-  styleElement.innerHTML = `@keyframes ${animationName} {
-    from { ${Object.keys(actualProperties).map(p => `${camelCaseToDashCase(p)}: ${actualProperties[p]}`).join(';')} }
+  styleElement.innerHTML += `@keyframes ${animationName} {
     to { ${Object.keys(properties).map(p => `${camelCaseToDashCase(p)}: ${properties[p]}`).join(';')} }
   }`
 
-  window.document.head.appendChild(styleElement)
-
-  return { animationName, styleElement }
+  return animationName
 }
 
 /**
@@ -199,13 +194,12 @@ function mapSpecificOptions (options, i) {
  * @param {Element} element
  * @param {object} options
  * @param {object} properties
+ * @param {string} animationName
  * @param {number} i
  * @returns {Promise<void>}
  */
-async function animate (element, options, properties, i) {
+async function animate (element, options, properties, animationName, i) {
   if (element.style.animationPlayState !== 'running') {
-    const { animationName, styleElement } = createKeyFrame(element, properties)
-
     // Map any specific options.
     const { duration, easing, delay, loop } = mapSpecificOptions(options, i)
 
@@ -229,8 +223,6 @@ async function animate (element, options, properties, i) {
     }
 
     element.style.animationPlayState = 'paused'
-
-    styleElement.remove()
   }
 }
 
@@ -242,7 +234,14 @@ async function animate (element, options, properties, i) {
  * @returns {Promise<void[]>}
  */
 async function animateAll (elements, options, properties) {
-  return Promise.all(Array.from(elements).map(function (element, i) {
-    return animate(element, copyObject(options), copyObject(properties), i)
+  const styleElement = window.document.createElement('style')
+  const animationName = createKeyFrame(styleElement, properties)
+
+  window.document.head.appendChild(styleElement)
+
+  await Promise.all(Array.from(elements).map(function (element, i) {
+    return animate(element, copyObject(options), copyObject(properties), animationName, i)
   }))
+
+  styleElement.remove()
 }
