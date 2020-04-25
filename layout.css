@@ -171,14 +171,14 @@ header #strengths span {
 #features .animation #list-animation li > div:first-child {
     width: 80px;
     height: 10px;
-    background-color: #b1b1b1;
+    background-color: #b39b5c;
 }
 
 #features .animation #list-animation li > div:nth-child(2) {
     margin-top: 4px;
     width: 150px;
     height: 8px;
-    background-color: #c9c9c9;
+    background-color: #c4b796;
 }
 
 #features .animation #text-animation {
@@ -203,6 +203,30 @@ header #strengths span {
     margin: 5px;
     width: 90px;
     height: 65px;
+}
+
+#features .animation #button-animation {
+    font-size: 40px;
+    color: darkred;
+    text-align: center;
+}
+
+#features .animation #button-animation {
+    font-size: 40px;
+    color: darkred;
+    text-align: center;
+}
+
+#features .animation #loading-animation {
+    display: flex;
+    width: auto;
+}
+
+#features .animation #loading-animation > div {
+    background-color: olivedrab;
+    width: 10px;
+    height: 30px;
+    margin: 0 3px;
 }
 
 #features .play-button {
