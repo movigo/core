@@ -8,7 +8,8 @@ export const availableProperties = [
   'color', 'backgroundColor',
   'opacity',
   'fontSize',
-  'filter'
+  'filter',
+  'boxShadow'
 ]
 
 // List of all available transformations (additional properties).
