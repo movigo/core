@@ -129,6 +129,29 @@ header #strengths span {
     flex: 1;
 }
 
+#features ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+#features li {
+    margin: 10px 0;
+}
+
+#features li > div:first-child {
+    width: 80px;
+    height: 10px;
+    background-color: #b39b5c;
+}
+
+#features li > div:nth-child(2) {
+    margin-top: 4px;
+    width: 150px;
+    height: 8px;
+    background-color: #c4b796;
+}
+
 #features .animation {
     position: relative;
     display: flex;
@@ -151,34 +174,12 @@ header #strengths span {
     border-radius: 100%;
 }
 
-#features .animation #list-animation {
+#features .animation #list-animation,
+#features .animation #choreography-animation {
     width: 150px;
     height: 235px;
     border: 1px solid lightgray;
     padding: 10px;
-}
-
-#features .animation #list-animation ul {
-    list-style-type: none;
-    padding-left: 0;
-    margin: 0;
-}
-
-#features .animation #list-animation li {
-    margin: 10px 0;
-}
-
-#features .animation #list-animation li > div:first-child {
-    width: 80px;
-    height: 10px;
-    background-color: #b39b5c;
-}
-
-#features .animation #list-animation li > div:nth-child(2) {
-    margin-top: 4px;
-    width: 150px;
-    height: 8px;
-    background-color: #c4b796;
 }
 
 #features .animation #text-animation {
