@@ -66,13 +66,13 @@ const movigo = require('../dist/movigo')
       test.equal(typeof target[fun], 'function')
     }
 
-    test.equal(typeof target['animate'], 'function')
+    test.equal(typeof target.animate, 'function')
 
     test.end()
   })
 
   tape('Action functions should return an object with action, option and animate functions', function (test) {
-    const target = movigo.target('div').translate('100px', '100px')
+    const target = movigo.target('div').to({ translate: '100px 100px' })
     const actions = movigo.actions()
     const options = movigo.options()
 
@@ -80,7 +80,7 @@ const movigo = require('../dist/movigo')
       test.equal(typeof target[fun], 'function')
     }
 
-    test.equal(typeof target['animate'], 'function')
+    test.equal(typeof target.animate, 'function')
 
     test.end()
   })
@@ -152,7 +152,7 @@ const movigo = require('../dist/movigo')
   tape('Animate function should throw a promise exception for no animation changes', async function (test) {
     const target = movigo.target('div')
 
-    test.equal(typeof target.translate('100px', '100px').animate().then, 'function')
+    test.equal(typeof target.to({ translate: '100px 100px' }).animate().then, 'function')
 
     test.end()
   })
