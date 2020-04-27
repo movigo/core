@@ -17,11 +17,14 @@ export function getElements (selector) {
  * Check the parameter types and throw a type error if the parameter is not of the correct type.
  * @param {*} parameter
  * @param {string} type
+ * @returns {*}
  */
 export function checkBuiltInTypes (parameter, type) {
   if (!type.includes(typeof parameter)) {
     throw TypeError(`'${parameter}' value is not a ${type.split(' ').join(' or a ')}.`)
   }
+
+  return parameter
 }
 
 /**
