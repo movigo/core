@@ -75,7 +75,6 @@ function createChainFunctions (items, chainFunction) {
  * @returns {object}
  */
 function createActionFunctions (elements, parameters) {
-  // Option functions always take only one parameter.
   return createChainFunctions(Object.keys(availableActions), function addActionFunction (value, action, i) {
     checkBuiltInTypes(value, Object.values(availableActions)[i])
 
@@ -101,7 +100,6 @@ function createActionFunctions (elements, parameters) {
  * @returns {object}
  */
 function createOptionFunctions (elements, parameters) {
-  // Option functions always take only one parameter.
   return createChainFunctions(Object.keys(availableOptions), function addOptionFunction (value, option, i) {
     // Make a copy of options' object to save state in different function chains.
     const parametersCopy = copyObject(parameters)
@@ -116,7 +114,7 @@ function createOptionFunctions (elements, parameters) {
 }
 
 /**
- *
+ * Add a keyframe for the animations in the style element.
  * @param {Element} styleElement
  * @param {object} parameters
  * @returns {string}
@@ -133,9 +131,10 @@ function createKeyFrame (styleElement, parameters) {
 }
 
 /**
- *
+ * Create an object of properties in which are set specific properties, valid for the i-th element.
  * @param {object} parameters
  * @param {number} i
+ * @returns {object}
  */
 function mapSpecificParameters (parameters, i) {
   return Object.keys(parameters).reduce(function (accumulator, parameter) {
@@ -156,7 +155,7 @@ function mapSpecificParameters (parameters, i) {
  */
 async function animate (element, parameters, animationName, i) {
   if (element.style.animationPlayState !== 'running') {
-    // Map any specific options.
+    // Map any specific properties.
     const { duration, easing, delay, loop } = mapSpecificParameters(parameters, i)
 
     element.style.animation = `${animationName} ${duration}s ${easing} ${delay}s ${loop || 'infinite'}`
@@ -183,7 +182,7 @@ async function animate (element, parameters, animationName, i) {
 }
 
 /**
- *
+ * Animate all the elements of the target.
  * @param {NodeList} elements
  * @param {object} parameters
  * @returns {Promise<void[]>}
