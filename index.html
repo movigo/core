@@ -38,14 +38,14 @@
         <div id="logo">
             <img src="/resources/icon.png">
         </div>
-        <div id="description">
+        <div id="preamble">
             <h1>Movigo.js</h1>
             <p>
                 Ultralight JS library to animate your DOM elements.
                 For the installation of the library read the
                 <a href="https://github.com/cedoor/movigo#readme" target="_blank">README</a>
-                file on Github. For use cases go to Ceditor
-                <a href="https://ceditor.cedoor.dev/40d7fcbb1d31d30fa9932bfcdeff91cd/movigo.js">gists</a>.
+                file on Github. If you want to try the library go to
+                <a href="https://ceditor.cedoor.dev/40d7fcbb1d31d30fa9932bfcdeff91cd/movigo.js">Ceditor</a>.
             </p>
         </div>
     </div>
@@ -59,14 +59,14 @@
 </header>
 
 <!-- Boxes where the various features can be shown with examples -->
-<div id="features">
+<div id="examples">
     <div>
         <div class="animation">
             <span onclick="animation1(this)" class="play-button" title="Play animation">&#8227;</span>
             <div style="background-color: darkred"></div>
         </div>
         <div>
-            <div class="description">
+            <div>
                 <h3>Functions</h3>
                 <p>
                     First function to call is always <b>target</b>, which takes a selector or a DOM element as input
@@ -87,14 +87,12 @@
     const element = document.querySelector('div')
     const target = movigo.target(element)
 
-    target.duration(1) // Option function.
+    target.duration(.8) // Option function.
 
-    target.width('100px') // Action function.
-
-    const animation = target.width('200px').duration(1)
+    target.to({ width: '200px' }) // Action function.
 
     // Create the animation and wait for the end.
-    await animation.animate()
+    await target.duration(.8).to({ width: '200px' }).animate()
             </code></pre>
         </div>
     </div>
@@ -104,7 +102,7 @@
             <div style="background-color: darkolivegreen"></div>
         </div>
         <div>
-            <div class="description">
+            <div>
                 <h3>Method chaining</h3>
                 <p>
                     As you can see Movigo use
@@ -114,10 +112,10 @@
                 </p>
             </div>
             <pre class="code"><code class="js">
-    const animation = target.duration(.5)
+    const animation = target.duration(.4)
 
-    await animation.width('100px').animate()
-    await animation.height('100px').animate()
+    await animation.to({ width: '100px' }).animate()
+    await animation.to({ height: '100px' }).animate()
             </code></pre>
         </div>
     </div>
@@ -127,21 +125,24 @@
             <div style="background-color: chocolate"></div>
         </div>
         <div>
-            <div class="description">
+            <div>
                 <h3>Actions</h3>
                 <p>
-                    Actions correspond to CSS properties and their values must be the same values as CSS properties.
-                    To see a full list of available actions you can use <b>movigo.actions()</b> function.
-                    You can also see a full list of action functions in the
-                    <a href="https://github.com/cedoor/movigo#readme" target="_blank">README</a> file.
+                    Actions allow you to change CSS property values. There are currently two function:
+                    <b>to</b> and <b>from</b>. Both take an object containing CSS properties and they
+                    work like in a CSS keyframe: 'from' represent the initial state of the animation,
+                    'to' the final state. If 'from' function is not defined, the initial state is
+                    represented by the current CSS target properties. To see a full list of available
+                    actions you can also use <b>movigo.actions()</b> function.
                 </p>
             </div>
             <pre class="code"><code class="js">
-    await target
-        .width('80px').height('80px')
-        .rotateZ('90deg').translateY('-100px')
-        .borderRadius('100%')
-        .animate()
+    await target.duration(.3).to({
+      width: '80px',
+      height: '80px',
+      borderRadius: '100%',
+      transform: 'rotateZ(90deg) translateY(-100px)'
+    }).animate()
             </code></pre>
         </div>
     </div>
@@ -151,32 +152,34 @@
             <div style="background-color: darkcyan"></div>
         </div>
         <div>
-            <div class="description">
+            <div>
                 <h3>Options</h3>
                 <p>
                     Options allow you to set some properties of the animations, such as duration,
                     speed curve of the transition effect, delays or loops. In particular, a loop
                     can be infinite or determined by a number.
                     To see a full list of available options you can use <b>movigo.options()</b> function.
-                    You can also see a full list of option functions in the
-                    <a href="https://github.com/cedoor/movigo#readme" target="_blank">README</a> file.
                 </p>
             </div>
             <pre class="code"><code class="js">
     await target
-        .duration(.5).delay(.5).easing('ease-in-out').loop(2)
-        .width('80px').height('80px')
-        .rotateZ('180deg')
-        .animate()
+        .delay(.5).duration(.8)
+        .easing('ease-in-out')
+        .loop(2)
+        .to({
+            width: '80px',
+            height: '80px',
+            transform: 'rotateZ(180deg)'
+        }).animate()
 
     // Infinite loop:
-    // target.left('100px').loop().animate()
+    // target.loop().to({ left: '100px' }).animate()
             </code></pre>
         </div>
     </div>
     <div>
         <div class="animation">
-            <span onclick="animation6(this)" class="play-button" title="Play animation">&#8227;</span>
+            <span onclick="animation5(this)" class="play-button" title="Play animation">&#8227;</span>
             <div id="text-animation">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
                 ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
@@ -184,37 +187,50 @@
             </div>
         </div>
         <div>
-            <div class="description">
-                <h3>Text</h3>
+            <div>
+                <h3>Specific options</h3>
                 <p>
-                    ...
+                    Option functions can get a function as parameter, in which i-th element can be used to
+                    define element specific options.
                 </p>
             </div>
             <pre class="code"><code class="js">
+    const letters = element.querySelectorAll('span')
+    const target = movigo.target(letters)
+
+    await target
+        .delay((i, el) => i * .05).duration(.4)
+        .easing('cubic-bezier(0.4, 0.0, 0.2, 1)')
+        .to({ opacity: 1 }).animate()
             </code></pre>
         </div>
     </div>
     <div>
         <div class="animation">
-            <span onclick="animation8(this)" class="play-button" title="Play animation">&#8227;</span>
+            <span onclick="animation6(this)" class="play-button" title="Play animation">&#8227;</span>
             <div id="button-animation">
                 ♥
             </div>
         </div>
         <div>
-            <div class="description">
-                <h3>Button</h3>
+            <div>
+                <h3>Feedback</h3>
                 <p>
-                    ...
+                    You can create simple animations to make your UI more user-friendly with feedback.
                 </p>
             </div>
             <pre class="code"><code class="js">
+    await target
+        .duration(.1).loop(1)
+        .easing('cubic-bezier(0.33, 1, 0.68, 1)')
+        .to({ transform: 'scale(2, 2)', opacity: .3 })
+        .animate()
             </code></pre>
         </div>
     </div>
     <div>
         <div class="animation">
-            <span onclick="animation9(this)" class="play-button" title="Play animation">&#8227;</span>
+            <span onclick="animation7(this)" class="play-button" title="Play animation">&#8227;</span>
             <div id="loading-animation">
                 <div></div>
                 <div></div>
@@ -224,20 +240,24 @@
             </div>
         </div>
         <div>
-            <div class="description">
+            <div>
                 <h3>Loading</h3>
                 <p>
-                    ...
+                    You can create loading animations with a few lines of code.
                 </p>
             </div>
             <pre class="code"><code class="js">
+    await target
+        .delay(i => i * .1).duration(.4).loop(5)
+        .to({ transform: 'scaleY(1.5)', opacity: .6 })
+        .animate()
             </code></pre>
         </div>
     </div>
     <div>
         <div class="animation">
-            <span onclick="animation5(this)" class="play-button" title="Play animation">&#8227;</span>
-            <div id="list-animation">
+            <span onclick="animation8(this)" class="play-button" title="Play animation">&#8227;</span>
+            <div class="screen">
                 <ul>
                     <li>
                         <div></div>
@@ -271,20 +291,28 @@
             </div>
         </div>
         <div>
-            <div class="description">
-                <h3>List</h3>
+            <div>
+                <h3>Lists</h3>
                 <p>
-                    ...
+                    Setting duration, easing and delays correctly you can create interesting animations for the lists.
                 </p>
             </div>
             <pre class="code"><code class="js">
+    const elements = element.querySelectorAll('li')
+    const target = movigo.target(elements)
+
+    await target
+        .delay(i => i * .1).duration(.3)
+        .easing('cubic-bezier(0.0, 0.0, 0.2, 1)')
+        .to({ opacity: 1, transform: 'translateY(0px)' })
+        .animate()
             </code></pre>
         </div>
     </div>
     <div>
         <div class="animation">
-            <span onclick="animation7(this)" class="play-button" title="Play animation">&#8227;</span>
-            <div id="focus-animation">
+            <span onclick="animation9(this)" class="play-button" title="Play animation">&#8227;</span>
+            <div id="focus-animation" class="screen">
                 <img src="https://cdn.audleytravel.com/-/-/79/1338050-colosseum-rome.jpg">
                 <img src="https://4.bp.blogspot.com/-V9lFhJJZPwI/UQgN0JXUDDI/AAAAAAAAjwQ/ZgSE0j8w-ZQ/s1600/indie-paris-eiffel-tower-jpg-1189976.jpg">
                 <img src="http://athenaposters.ca/wp-content/uploads/2017/05/2400-0764-London-Big-Ben-36x24.jpg">
@@ -292,20 +320,37 @@
             </div>
         </div>
         <div>
-            <div class="description">
+            <div>
                 <h3>Focus</h3>
                 <p>
-                    ...
+                    By running multiple animations simultaneously it is possible to create more complex effects,
+                    such as a greater focus on an element (e.g. images).
                 </p>
             </div>
             <pre class="code"><code class="js">
+    selectedElement.style.zIndex = '2'
+
+    movigo.target(selectedElement)
+        .duration(.3)
+        .easing('cubic-bezier(0.34, 1.56, 0.64, 1)')
+        .to({ transform: 'scale(2.2, 2.2)' })
+        .animate()
+
+    for (const element of otherElements) {
+        element.style.zIndex = '1'
+    }
+
+    movigo.target(otherElements)
+        .duration(.3).easing('ease-in-out')
+        .to({ filter: 'brightness(60%) blur(1px)' })
+        .animate()
             </code></pre>
         </div>
     </div>
     <div>
         <div class="animation">
             <span onclick="animation10(this)" class="play-button" title="Play animation">&#8227;</span>
-            <div id="choreography-animation">
+            <div class="screen">
                 <img src="https://cdn.audleytravel.com/-/-/79/1338050-colosseum-rome.jpg"
                      style="width: 150px; height: 90px; margin-bottom: 5px">
                 <ul>
@@ -329,13 +374,30 @@
             </div>
         </div>
         <div>
-            <div class="description">
+            <div>
                 <h3>Choreography</h3>
                 <p>
-                    ...
+                    Simultaneous animations and correct parameters also allow you to create
+                    complex choreographies, in which the elements move in harmony.
                 </p>
             </div>
             <pre class="code"><code class="js">
+    movigo.target(screen)
+        .duration(.3)
+        .to({ transform: 'scale(1, 1)' })
+        .animate()
+
+    movigo.target(element.nextElementSibling.querySelector('img'))
+        .duration(duration)
+        .from({ borderRadius: '100%', filter: 'blur(3px)' })
+        .to({ borderRadius: '0', filter: 'blur(0)' })
+        .animate()
+
+    movigo.target(list)
+        .duration(.3)
+        .from({ opacity: 0 })
+        .to({ opacity: 1 })
+        .animate()
             </code></pre>
         </div>
     </div>
@@ -356,84 +418,62 @@
 <script>
   hljs.initHighlightingOnLoad()
 
+  const toggleAnimation = {}
+
   async function animation1 (element) {
     const target = movigo.target(element.nextElementSibling)
 
-    await target.to({
-      width: '50px',
-    }).duration(.1).animate()
-
-    await target.to({
-      width: '200px'
-    }).duration(.8).animate()
+    await target.duration(.1).to({ width: '50px', }).animate()
+    await target.duration(.8).to({ width: '200px' }).animate()
   }
 
   async function animation2 (element) {
     const target = movigo.target(element.nextElementSibling)
 
-    await target.to({
+    await target.duration(.1).to({
       width: '50px',
       height: '50px'
-    }).duration(.1).animate()
-
-    const animation = target.duration(.5)
-
-    await animation.to({
-      width: '100px'
     }).animate()
 
-    await animation.to({
-      height: '100px'
-    }).animate()
+    const animation = target.duration(.4)
+
+    await animation.to({ width: '100px' }).animate()
+    await animation.to({ height: '100px' }).animate()
   }
 
   async function animation3 (element) {
     const target = movigo.target(element.nextElementSibling)
 
-    await target.to({
+    await target.duration(.1).to({
       width: '50px',
       height: '50px',
       borderRadius: '0',
       transform: 'rotateZ(0) translateY(0)'
-    }).duration(.1).animate()
+    }).animate()
 
-    await target.to({
+    await target.duration(.3).to({
       width: '80px',
       height: '80px',
       borderRadius: '100%',
       transform: 'rotateZ(90deg) translateY(-100px)'
-    }).duration(.3).animate()
+    }).animate()
   }
 
   async function animation4 (element) {
     const target = movigo.target(element.nextElementSibling)
 
-    await target.to({
-      width: '80px',
-      height: '80px',
-      transform: 'rotateZ(180deg)'
-    }).duration(1).delay(.5).easing('ease-in-out').loop(2).animate()
+    await target
+      .delay(.5).duration(.8)
+      .easing('ease-in-out')
+      .loop(2)
+      .to({
+        width: '80px',
+        height: '80px',
+        transform: 'rotateZ(180deg)'
+      }).animate()
   }
 
   async function animation5 (element) {
-    const elements = element.nextElementSibling.querySelectorAll('li')
-    const target = movigo.target(elements)
-
-    await target.to({
-      opacity: 0,
-      transform: 'translateY(80px)'
-    }).duration(.1).animate()
-
-    target.to({
-      opacity: 1,
-      transform: 'translateY(0px)'
-    }).duration(.3)
-      .delay(i => (i + 1) * .1)
-      .easing('cubic-bezier(0.0, 0.0, 0.2, 1)')
-      .animate()
-  }
-
-  async function animation6 (element) {
     const originalText = element.nextElementSibling.innerText
 
     element.nextElementSibling.innerHTML = originalText.split('').reduce((a, l) => a += l === ' ' ? l : `<span>${l}</span>`, '')
@@ -441,102 +481,109 @@
     const elements = element.nextElementSibling.querySelectorAll('span')
     const target = movigo.target(elements)
 
-    await target.to({
-      opacity: 0
-    }).duration(.1).animate()
-
-    await target.to({
-      opacity: 1
-    })
-      .duration(.5)
-      .delay(i => (i + 1) * .05)
+    await target.duration(.1).to({ opacity: 0 }).animate()
+    await target
+      .delay(i => i * .05).duration(.4)
       .easing('cubic-bezier(0.4, 0.0, 0.2, 1)')
-      .animate()
+      .to({ opacity: 1 }).animate()
 
     element.nextElementSibling.innerText = originalText
   }
 
+  async function animation6 (element) {
+    const target = movigo.target(element.nextElementSibling)
+
+    await target
+      .duration(.1).loop(1)
+      .easing('cubic-bezier(0.33, 1, 0.68, 1)')
+      .to({ transform: 'scale(2, 2)', opacity: .3 })
+      .animate()
+  }
+
   async function animation7 (element) {
-    const randomNumber = Math.floor(Math.random() * 3 + 1)
-    const focusElement = element.nextElementSibling.querySelector(`img:nth-child(${randomNumber})`)
+    const elements = element.nextElementSibling.querySelectorAll('div')
+    const target = movigo.target(elements)
+
+    await target
+      .delay(i => i * .1).duration(.4).loop(5)
+      .to({ transform: 'scaleY(1.5)', opacity: .6 })
+      .animate()
+  }
+
+  async function animation8 (element) {
+    toggleAnimation.animation8 = !toggleAnimation.animation8
+
+    const duration = toggleAnimation.animation8 ? .3 : 2
+    const elements = element.nextElementSibling.querySelectorAll('li')
+    const target = movigo.target(elements)
+
+    await target
+      .duration(.1)
+      .to({ opacity: 0, transform: 'translateY(80px)' })
+      .animate()
+
+    await target
+      .delay(i => i * duration / 3).duration(duration)
+      .easing('cubic-bezier(0.0, 0.0, 0.2, 1)')
+      .to({ opacity: 1, transform: 'translateY(0px)' })
+      .animate()
+  }
+
+  async function animation9 (element) {
+    toggleAnimation.animation9 = !toggleAnimation.animation9
+
+    const duration = toggleAnimation.animation9 ? .3 : 2
+    const focusElement = element.nextElementSibling.querySelector(`img:nth-child(2)`)
     const elements = Array.from(element.nextElementSibling.querySelectorAll('img'))
 
-    await movigo.target(elements).to({
-      filter: 'brightness(100%)',
-      transform: 'scale(1, 1)'
-    })
-      .duration(.25)
-      .easing('ease-in-out')
+    await movigo.target(elements)
+      .duration(.25).easing('ease-in-out')
+      .to({ filter: 'brightness(100%)', transform: 'scale(1, 1)' })
       .animate()
 
     elements.splice(elements.indexOf(focusElement), 1)
 
     focusElement.style.zIndex = '2'
 
-    movigo.target(focusElement).to({
-      transform: 'scale(2.2, 2.2)'
-    })
-      .duration(.3)
-      .easing('cubic-bezier(0.34, 1.56, 0.64, 1)')
+    movigo.target(focusElement)
+      .duration(duration).easing('cubic-bezier(0.34, 1.56, 0.64, 1)')
+      .to({ transform: 'scale(2.2, 2.2)' })
       .animate()
 
     for (const element of elements) {
       element.style.zIndex = '1'
     }
 
-    movigo.target(elements).to({
-      filter: 'brightness(60%) blur(1px)'
-    })
-      .duration(.3)
-      .easing('ease-in-out')
-      .animate()
-  }
-
-  async function animation8 (element) {
-    await movigo.target(element.nextElementSibling).to({
-      transform: 'scale(2, 2)',
-      opacity: .2
-    })
-      .duration(.1)
-      .easing('cubic-bezier(0.33, 1, 0.68, 1)')
-      .loop(1)
-      .animate()
-  }
-
-  async function animation9 (element) {
-    const elements = element.nextElementSibling.querySelectorAll('div')
-
-    await movigo.target(elements).to({
-      transform: 'scaleY(1.5)',
-      opacity: .6
-    })
-      .duration(.4)
-      .delay(i => (i + 1) * 0.1)
-      .loop(5)
+    movigo.target(elements)
+      .duration(duration).easing('ease-in-out')
+      .to({ filter: 'brightness(60%) blur(1px)' })
       .animate()
   }
 
   async function animation10 (element) {
+    toggleAnimation.animation10 = !toggleAnimation.animation10
+
+    const duration = toggleAnimation.animation10 ? .3 : 2
     await movigo.target(element.nextElementSibling)
+      .duration(.25)
       .to({ transform: 'scale(0, 0)' })
-      .duration(.1)
       .animate()
 
     movigo.target(element.nextElementSibling)
+      .duration(duration)
       .to({ transform: 'scale(1, 1)' })
-      .duration(1)
       .animate()
 
     movigo.target(element.nextElementSibling.querySelector('img'))
-      .from({ filter: 'brightness(60%) blur(2px)' })
-      .to({ filter: 'brightness(100%) blur(0)' })
-      .duration(1)
+      .duration(duration)
+      .from({ borderRadius: '100%', filter: 'blur(3px)' })
+      .to({ borderRadius: '0', filter: 'blur(0)' })
       .animate()
 
-    movigo.target(element.nextElementSibling.querySelectorAll('li'))
+    movigo.target(element.nextElementSibling.querySelector('ul'))
+      .duration(duration)
       .from({ opacity: 0 })
       .to({ opacity: 1 })
-      .duration(1)
       .animate()
   }
 </script>
