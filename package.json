@@ -13,7 +13,7 @@
   "jsdelivr": "dist/movigo.min.js",
   "module": "src/index.js",
   "scripts": {
-    "start": "npm test && live-server",
+    "start": "npm test && bash bin/less-watcher.sh & live-server",
     "pretest": "rollup -c",
     "test": "tape 'test/**/*.js' | tap-spec",
     "prepublishOnly": "rm -rf dist && npm run test"
@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "jsdom": "16.2.2",
+    "less": "^3.11.1",
     "live-server": "1.2.1",
     "rollup": "2.3.4",
     "rollup-plugin-commonjs": "10.1.0",
