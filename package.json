@@ -1,7 +1,7 @@
 {
-  "name": "@cedoor/movigo",
+  "name": "@movigo/core",
   "version": "0.4.0",
-  "description": "Ultralight JS library to animate your DOM elements.",
+  "description": "Movigo library core with base features to animate your DOM elements.",
   "author": {
     "name": "Omar Desogus",
     "email": "me@cedoor.dev",
@@ -21,10 +21,10 @@
   "publishConfig": {
     "access": "public"
   },
-  "homepage": "https://github.com/cedoor/movigo#readme",
+  "homepage": "https://github.com/movigo/core#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cedoor/movigo.git"
+    "url": "git+https://github.com/movigo/core.git"
   },
   "keywords": [
     "js-animations",
@@ -32,7 +32,7 @@
     "animations-library"
   ],
   "bugs": {
-    "url": "https://github.com/cedoor/movigo/issues"
+    "url": "https://github.com/movigo/core/issues"
   },
   "devDependencies": {
     "jsdom": "16.2.2",
