@@ -3,7 +3,7 @@ import resolve from 'rollup-plugin-node-resolve'
 import { terser } from 'rollup-plugin-terser'
 import * as meta from './package.json'
 
-const name = meta.name.split('/')[1]
+const name = meta.name.split('/')[0].substr(1)
 
 const config = {
   input: meta.module,
