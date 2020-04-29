@@ -1,17 +1,17 @@
 <p align="center">
     <h1 align="center">
-        <img width="40" src="https://raw.githubusercontent.com/cedoor/movigo/master/resources/icon.png">
+        <img width="40" src="https://raw.githubusercontent.com/movigo/core/master/resources/icon.png">
         Movigo
     </h1>
-    <p align="center">Ultralight JS library to animate your DOM elements.</p>
+    <p align="center">Movigo library core with base features to animate your DOM elements.</p>
 </p>
     
 <p align="center">
-    <a href="https://github.com/cedoor/movigo/blob/master/LICENSE" target="_blank">
-        <img src="https://img.shields.io/github/license/cedoor/movigo.svg?style=flat-square">
+    <a href="https://github.com/movigo/core/blob/master/LICENSE" target="_blank">
+        <img src="https://img.shields.io/github/license/movigo/core.svg?style=flat-square">
     </a>
-    <a href="https://david-dm.org/cedoor/movigo?type=dev" target="_blank">
-        <img src="https://img.shields.io/david/dev/cedoor/movigo.svg?style=flat-square">
+    <a href="https://david-dm.org/movigo/core?type=dev" target="_blank">
+        <img src="https://img.shields.io/david/dev/movigo/core.svg?style=flat-square">
     </a>
 </p>
 
@@ -40,13 +40,13 @@ ________________________________
 
 You can install movigo package with npm:
 
-    npm install @cedoor/movigo --save
+    npm install @movigo/core --save
     
 ### CDN
 
 You can also load it using a \<script> using the unpkg CDN:
     
-    <script src="https://unpkg.com/@cedoor/movigo"></script>
+    <script src="https://unpkg.com/@movigo/core"></script>
 
 ## :chart_with_upwards_trend: Development
 
@@ -96,7 +96,7 @@ Examples:
     git branch -b style/header
 
 ## :page_facing_up: License
-* See [LICENSE](https://github.com/cedoor/movigo/blob/master/LICENSE) file.
+* See [LICENSE](https://github.com/movigo/core/blob/master/LICENSE) file.
 
 ## :telephone_receiver: Contacts
 ### :boy: Developers
