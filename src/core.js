@@ -1,4 +1,5 @@
 import { availableActions } from './actions'
+import { availableOptions } from './options'
 import {
   camelCaseToDashCase,
   checkBuiltInTypes,
@@ -8,7 +9,35 @@ import {
   getElements,
   isDomElementOrNodeList
 } from './utils'
-import { availableOptions } from './options'
+
+// Default parameters.
+const defaultParameters = {
+  duration: 0.3,
+  delay: 0,
+  easing: 'linear',
+  loop: 0,
+  from: {},
+  to: {}
+}
+
+// Plugin functions.
+export let pluginFunctions = []
+
+/**
+ *
+ * @returns {object}
+ */
+export function parameters () {
+  return copyObject(defaultParameters)
+}
+
+export function plugins (functions) {
+  for (const f of functions) {
+    checkBuiltInTypes(f, 'function')
+  }
+
+  pluginFunctions = functions.slice()
+}
 
 /**
  * First chaining function to select DOM element (target) to animate.
@@ -17,23 +46,13 @@ import { availableOptions } from './options'
  * @returns {object}
  */
 export function target (elements) {
-  // Default parameters.
-  const parameters = {
-    duration: 0.3,
-    delay: 0,
-    easing: 'linear',
-    loop: 0,
-    from: {},
-    to: {}
-  }
-
   if (isDomElementOrNodeList(elements)) {
-    return getAllChainFunctions(elements.length ? elements : [elements], parameters)
+    return getAllChainFunctions(elements.length ? elements : [elements], defaultParameters)
   }
 
   checkBuiltInTypes(elements, 'string')
 
-  return getAllChainFunctions(getElements(elements), parameters)
+  return getAllChainFunctions(getElements(elements), defaultParameters)
 }
 
 /**
@@ -46,7 +65,9 @@ function getAllChainFunctions (elements, parameters) {
   return {
     ...createActionFunctions(elements, parameters), // Action functions.
     ...createOptionFunctions(elements, parameters), // Option functions.
-    animate: () => animateAll(elements, parameters) // Animate function.
+    ...createPluginFunctions(elements, parameters), // Plugin functions.
+    animate: () => animateAll(elements, parameters), // Animate function.
+    parameters: () => copyObject(parameters) // Return current parameters.
   }
 }
 
@@ -60,8 +81,8 @@ function getAllChainFunctions (elements, parameters) {
  */
 function createChainFunctions (items, chainFunction) {
   return items.reduce(function addTransformFunction (accumulator, item, i) {
-    accumulator[item] = function (value) {
-      return chainFunction(value, item, i)
+    accumulator[item] = function (...values) {
+      return chainFunction(values, item, i)
     }
 
     return accumulator
@@ -75,7 +96,7 @@ function createChainFunctions (items, chainFunction) {
  * @returns {object}
  */
 function createActionFunctions (elements, parameters) {
-  return createChainFunctions(Object.keys(availableActions), function addActionFunction (value, action, i) {
+  return createChainFunctions(Object.keys(availableActions), function addActionFunction ([value], action, i) {
     checkBuiltInTypes(value, Object.values(availableActions)[i])
 
     for (const entry of Object.entries(value)) {
@@ -100,7 +121,7 @@ function createActionFunctions (elements, parameters) {
  * @returns {object}
  */
 function createOptionFunctions (elements, parameters) {
-  return createChainFunctions(Object.keys(availableOptions), function addOptionFunction (value, option, i) {
+  return createChainFunctions(Object.keys(availableOptions), function addOptionFunction ([value], option, i) {
     // Make a copy of options' object to save state in different function chains.
     const parametersCopy = copyObject(parameters)
     const type = Object.values(availableOptions)[i]
@@ -108,6 +129,24 @@ function createOptionFunctions (elements, parameters) {
     parametersCopy[option] = typeof value === 'function'
       ? Array.from(elements).map((target, ii) => checkBuiltInTypes(value(ii, target), type))
       : checkBuiltInTypes(value, type)
+
+    return getAllChainFunctions(elements, parametersCopy)
+  })
+}
+
+/**
+ *
+ * @param {NodeList} elements
+ * @param {object} parameters
+ * @returns {object}
+ */
+export function createPluginFunctions (elements, parameters) {
+  return createChainFunctions(pluginFunctions.map(f => f.name), function addPluginFunction (values, functionName, i) {
+    checkBuiltInTypes(pluginFunctions[i], 'function')
+
+    // Make a copy of parameters' object to save state in different function chains.
+    const parametersCopy = copyObject(parameters)
+    pluginFunctions[i](elements, parametersCopy, ...values)
 
     return getAllChainFunctions(elements, parametersCopy)
   })

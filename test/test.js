@@ -23,6 +23,17 @@ const movigo = require('../dist/movigo')
     test.end()
   })
 
+  tape('Library should return the default animation parameters', function (test) {
+    const parameters = movigo.parameters()
+    const actions = movigo.actions()
+    const options = movigo.options()
+
+    test.equal(typeof parameters, 'object')
+    test.deepEqual([...options, ...actions], Object.keys(parameters))
+
+    test.end()
+  })
+
   tape('Target function should throw an exception if the parameter is not a string or a DOM element', function (test) {
     const wrongTypes = [1, true, () => null, {}, []]
 
@@ -55,7 +66,7 @@ const movigo = require('../dist/movigo')
     test.end()
   })
 
-  tape('Target function should return an object with action, option and animate functions', function (test) {
+  tape('Target function should return an object with actions, options, parameters and animate functions', function (test) {
     const target = movigo.target('div')
     const actions = movigo.actions()
     const options = movigo.options()
@@ -66,7 +77,35 @@ const movigo = require('../dist/movigo')
       test.equal(typeof target[fun], 'function')
     }
 
+    test.equal(typeof target.parameters, 'function')
     test.equal(typeof target.animate, 'function')
+
+    test.end()
+  })
+
+  tape('Parameter function should return an object with the parameters of the current animation state', function (test) {
+    const target = movigo.target('div').to({ translate: '100px 100px' })
+    const parameters = target.parameters()
+    const actions = movigo.actions()
+    const options = movigo.options()
+
+    test.equal(typeof parameters, 'object')
+    test.deepEqual([...options, ...actions], Object.keys(parameters))
+
+    test.end()
+  })
+
+  tape('Library should allow to add function plugins', function (test) {
+    function incrementDuration (elements, parameters, value) {
+      parameters.duration += value
+    }
+
+    movigo.plugins([incrementDuration])
+
+    const defaultParameters = movigo.parameters()
+    const parameters = movigo.target('div').incrementDuration(2).parameters()
+
+    test.equal(parameters.duration, defaultParameters.duration + 2)
 
     test.end()
   })
