@@ -21,7 +21,7 @@ const defaultParameters = {
 }
 
 // Plugin functions.
-export let pluginFunctions = []
+export const pluginFunctions = []
 
 /**
  *
@@ -31,12 +31,10 @@ export function parameters () {
   return copyObject(defaultParameters)
 }
 
-export function plugins (functions) {
-  for (const f of functions) {
-    checkBuiltInTypes(f, 'function')
-  }
+export function addPlugin (plugin) {
+  checkBuiltInTypes(plugin, 'function')
 
-  pluginFunctions = functions.slice()
+  pluginFunctions.push(plugin)
 }
 
 /**
@@ -97,18 +95,21 @@ function createChainFunctions (items, chainFunction) {
  */
 function createActionFunctions (elements, parameters) {
   return createChainFunctions(Object.keys(availableActions), function addActionFunction ([value], action, i) {
-    checkBuiltInTypes(value, Object.values(availableActions)[i])
-
-    for (const entry of Object.entries(value)) {
-      checkCSSPropertyValue(...entry)
-    }
-
     // Make a copy of parameters' object to save state in different function chains.
     const parametersCopy = copyObject(parameters)
-    parametersCopy[action] = {
-      ...parameters[action],
-      ...value
+    const type = Object.values(availableActions)[i]
+
+    function checks (value, type) {
+      for (const entry of Object.entries(value)) {
+        checkCSSPropertyValue(...entry)
+      }
+
+      return checkBuiltInTypes(value, type)
     }
+
+    parametersCopy[action] = typeof value === 'function'
+      ? Array.from(elements).map((target, ii) => checks(value(ii, target), type))
+      : checks(value, type)
 
     return getAllChainFunctions(elements, parametersCopy)
   })
@@ -154,19 +155,27 @@ export function createPluginFunctions (elements, parameters) {
 
 /**
  * Add a keyframe for the animations in the style element.
- * @param {Element} styleElement
+ * @param {HTMLStyleElement} styleElement
  * @param {object} parameters
  * @returns {string}
  */
 function createKeyFrame (styleElement, parameters) {
-  const animationName = createID()
+  const keyFrameName = createID(JSON.stringify({ ...parameters.from, ...parameters.to }))
 
-  styleElement.innerHTML += `@keyframes ${animationName} {
+  if (styleElement.sheet.rules) {
+    for (const keyFrame of Array.from(styleElement.sheet.rules)) {
+      if (keyFrame.name === keyFrameName) {
+        return keyFrameName
+      }
+    }
+  }
+
+  styleElement.sheet.insertRule(`@keyframes ${keyFrameName} {
     from { ${Object.keys(parameters.from).map(p => `${camelCaseToDashCase(p)}: ${parameters.from[p]}`).join(';')} }
     to { ${Object.keys(parameters.to).map(p => `${camelCaseToDashCase(p)}: ${parameters.to[p]}`).join(';')} }
-  }`
+  }`)
 
-  return animationName
+  return keyFrameName
 }
 
 /**
@@ -188,16 +197,17 @@ function mapSpecificParameters (parameters, i) {
  * creating transitions and return a promise resolved when the animation ends.
  * @param {Element} element
  * @param {object} parameters
- * @param {string} animationName
+ * @param {HTMLStyleElement} styleElement
  * @param {number} i
  * @returns {Promise<void>}
  */
-async function animate (element, parameters, animationName, i) {
+async function animate (element, parameters, styleElement, i) {
   if (element.style.animationPlayState !== 'running') {
     // Map any specific properties.
     const { duration, easing, delay, loop } = mapSpecificParameters(parameters, i)
+    const keyFrameName = createKeyFrame(styleElement, parameters)
 
-    element.style.animation = `${animationName} ${duration}s ${easing} ${delay}s ${loop || 'infinite'}`
+    element.style.animation = `${keyFrameName} ${duration}s ${easing} ${delay}s ${loop || 'infinite'}`
     element.style.animationIterationCount = typeof loop === 'undefined' ? 'infinite' : loop === 0 ? 1 : loop * 2
     element.style.animationDirection = 'alternate'
 
@@ -228,12 +238,11 @@ async function animate (element, parameters, animationName, i) {
  */
 async function animateAll (elements, parameters) {
   const styleElement = window.document.createElement('style')
-  const animationName = createKeyFrame(styleElement, parameters)
 
   window.document.head.appendChild(styleElement)
 
   await Promise.all(Array.from(elements).map(function (element, i) {
-    return animate(element, copyObject(parameters), animationName, i)
+    return animate(element, copyObject(parameters), styleElement, i)
   }))
 
   styleElement.remove()

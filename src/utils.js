@@ -72,11 +72,13 @@ export function copyObject (object) {
 }
 
 /**
- * Create a unique ID using Math.random function.
- * Math.random should be unique because of its seeding algorithm.
- * Convert it to base 36 (numbers + letters), and grab the first 9 characters after the decimal.
+ * Create a content-based ID with an acceptable number of collisions.
+ * @param {string} s
  * @returns {string}
  */
-export function createID () {
-  return '_' + Math.random().toString(36).substr(2, 9)
+export function createID (s) {
+  return '_' + s.split('').reduce(function (acc, c) {
+    acc = ((acc << 5) - acc) + c.charCodeAt(0)
+    return acc & acc
+  }, 0)
 }

@@ -96,16 +96,29 @@ const movigo = require('../dist/movigo')
   })
 
   tape('Library should allow to add function plugins', function (test) {
-    function incrementDuration (elements, parameters, value) {
-      parameters.duration += value
+    function createWidthChoreography (elements, parameters) {
+      parameters.to = []
+      parameters.delay = []
+
+      for (let i = 0; i < elements.length; i++) {
+        parameters.to.push({
+          width: '100px'
+        })
+
+        parameters.delay.push(i * 0.2)
+      }
     }
 
-    movigo.plugins([incrementDuration])
+    movigo.addPlugin(createWidthChoreography)
 
-    const defaultParameters = movigo.parameters()
-    const parameters = movigo.target('div').incrementDuration(2).parameters()
+    const parameters = movigo.target('div').createWidthChoreography().parameters()
 
-    test.equal(parameters.duration, defaultParameters.duration + 2)
+    test.equal(Array.isArray(parameters.delay), true)
+    test.equal(Array.isArray(parameters.to), true)
+
+    for (const to of parameters.to) {
+      test.deepEqual(to, { width: '100px' })
+    }
 
     test.end()
   })

@@ -1,3 +1,3 @@
-export { target, parameters, plugins } from './core'
+export { target, parameters, addPlugin } from './core'
 export { actions } from './actions'
 export { options } from './options'
