@@ -16,6 +16,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
     <script src="https://unpkg.com/@movigo/core"></script>
     <script src="/dist/movigo.js"></script>
+    <script src="https://unpkg.com/@movigo/list"></script>
 </head>
 
 <body>
@@ -44,8 +45,7 @@
                 Ultralight JS library to animate your DOM elements.
                 For the installation of the library read the
                 <a href="https://github.com/movigo/core#readme" target="_blank">README</a>
-                file on Github. If you want to try the library go to
-                <a href="https://ceditor.cedoor.dev/40d7fcbb1d31d30fa9932bfcdeff91cd/movigo.js">Ceditor</a>.
+                file on Github
             </p>
         </div>
     </div>
@@ -195,7 +195,7 @@
                 </p>
             </div>
             <pre class="code"><code class="js">
-    const letters = element.querySelectorAll('span')
+    const letters = document.querySelectorAll('span')
     const target = movigo.target(letters)
 
     await target
@@ -292,20 +292,17 @@
         </div>
         <div>
             <div>
-                <h3>Lists</h3>
+                <h3>List plugin</h3>
                 <p>
-                    Setting duration, easing and delays correctly you can create interesting animations for the lists.
+                    <a href="https://github.com/movigo/list" target="_blank">List plugin</a> allow you
+                    to animate list elements with appropriate timing function, duration, delay and
+                    initial position of elements.
                 </p>
             </div>
             <pre class="code"><code class="js">
-    const elements = element.querySelectorAll('li')
-    const target = movigo.target(elements)
+    const elements = document.querySelectorAll('ul > li')
 
-    await target
-        .delay(i => i * .1).duration(.3)
-        .easing('cubic-bezier(0.0, 0.0, 0.2, 1)')
-        .to({ opacity: 1, transform: 'translateY(0px)' })
-        .animate()
+    await movigo.target(elements).list().animate()
             </code></pre>
         </div>
     </div>
@@ -387,7 +384,7 @@
         .to({ transform: 'scale(1, 1)' })
         .animate()
 
-    movigo.target(element.nextElementSibling.querySelector('img'))
+    movigo.target(image)
         .duration(duration)
         .from({ borderRadius: '100%', filter: 'blur(3px)' })
         .to({ borderRadius: '0', filter: 'blur(0)' })
@@ -513,28 +510,8 @@
   async function animation8 (element) {
     toggleAnimation.animation8 = !toggleAnimation.animation8
 
-    const duration = toggleAnimation.animation8 ? .3 : 2
+    const duration = toggleAnimation.animation8 ? .3 : 1.5
     const elements = element.nextElementSibling.querySelectorAll('li')
-
-    function list (elements, parameters, values) {
-      values = {
-        x: 0, y: 100,
-        duration: .3,
-        ...values
-      }
-
-      elements.forEach(function (element) {
-        element.style.transform = `translate(${values.x}px, ${values.y}px)`
-        element.style.opacity = '0'
-      })
-
-      parameters.duration = values.duration
-      parameters.easing = 'cubic-bezier(0.0, 0.0, 0.2, 1)'
-      parameters.delay = Array.from(elements).map((element, i) => i * values.duration / 3)
-      parameters.to = { opacity: 1, transform: 'translateY(0px)' }
-    }
-
-    movigo.addPlugin(list)
 
     await movigo.target(elements).list({ duration }).animate()
   }
