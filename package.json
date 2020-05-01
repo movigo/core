@@ -1,6 +1,6 @@
 {
   "name": "@movigo/core",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Movigo library core with base features to animate your DOM elements.",
   "author": {
     "name": "Omar Desogus",
