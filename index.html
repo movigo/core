@@ -18,6 +18,7 @@
     <script src="/dist/movigo.js"></script>
     <script src="https://unpkg.com/@movigo/list"></script>
     <script src="https://unpkg.com/@movigo/focus"></script>
+    <script src="https://unpkg.com/@movigo/drawer"></script>
 </head>
 
 <body>
@@ -339,7 +340,7 @@
     <div>
         <div class="animation">
             <span onclick="animation10(this)" class="play-button" title="Play animation">&#8227;</span>
-            <div class="screen">
+            <div id="drawer-animation" class="screen">
                 <img src="https://cdn.audleytravel.com/-/-/79/1338050-colosseum-rome.jpg"
                      style="width: 150px; height: 90px; margin-bottom: 5px">
                 <ul>
@@ -360,33 +361,36 @@
                         <div></div>
                     </li>
                 </ul>
+                <nav class="sidenav">
+                    <ul>
+                        <li>
+                            <div></div>
+                            <div></div>
+                        </li>
+                        <li>
+                            <div></div>
+                            <div></div>
+                        </li>
+                        <li>
+                            <div></div>
+                            <div></div>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
         <div>
             <div>
-                <h3>Choreography</h3>
+                <h3>Drawer</h3>
                 <p>
-                    Simultaneous animations and correct parameters also allow you to create
-                    complex choreographies, in which the elements move in harmony.
+                    <a href="https://github.com/movigo/drawer" target="_blank">Drawer plugin</a> allow you to animate
+                    sidenavs, set position, width or open and close.
                 </p>
             </div>
             <pre class="code"><code class="js">
-    movigo.target(screen)
-        .duration(.3)
-        .to({ transform: 'scale(1, 1)' })
-        .animate()
+    const sidenav = document.querySelector('.sidenav')
 
-    movigo.target(image)
-        .duration(duration)
-        .from({ borderRadius: '100%', filter: 'blur(3px)' })
-        .to({ borderRadius: '0', filter: 'blur(0)' })
-        .animate()
-
-    movigo.target(list)
-        .duration(.3)
-        .from({ opacity: 0 })
-        .to({ opacity: 1 })
-        .animate()
+    await movigo.target(sidenav).drawer().animate()
             </code></pre>
         </div>
     </div>
@@ -524,28 +528,13 @@
   async function animation10 (element) {
     toggleAnimation.animation10 = !toggleAnimation.animation10
 
-    const duration = toggleAnimation.animation10 ? .3 : 2
-    await movigo.target(element.nextElementSibling)
-      .duration(.25)
-      .to({ transform: 'scale(0, 0)' })
-      .animate()
+    const sidenav = element.nextElementSibling.querySelector('.sidenav')
+    const open = toggleAnimation.animation10
 
-    movigo.target(element.nextElementSibling)
-      .duration(duration)
-      .to({ transform: 'scale(1, 1)' })
-      .animate()
-
-    movigo.target(element.nextElementSibling.querySelector('img'))
-      .duration(duration)
-      .from({ borderRadius: '100%', filter: 'blur(3px)' })
-      .to({ borderRadius: '0', filter: 'blur(0)' })
-      .animate()
-
-    movigo.target(element.nextElementSibling.querySelector('ul'))
-      .duration(duration)
-      .from({ opacity: 0 })
-      .to({ opacity: 1 })
-      .animate()
+    await movigo.target(sidenav).drawer({
+      width: 120,
+      open
+    }).animate()
   }
 </script>
 </html>

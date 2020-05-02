@@ -235,6 +235,36 @@ header {
         margin: 0 3px;
       }
     }
+
+    #drawer-animation {
+      position: relative;
+
+      .sidenav {
+        z-index: 1;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 100%;
+        background-color: #535353;
+        overflow-x: hidden;
+
+        li {
+          padding-left: 10px;
+
+          > div:first-child {
+            width: 50px;
+            background-color: #bfb08d;
+          }
+
+          > div:nth-child(2) {
+            margin-top: 4px;
+            width: 100px;
+            background-color: #d0c9b6;
+          }
+        }
+      }
+    }
   }
 }
 
