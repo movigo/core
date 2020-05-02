@@ -17,6 +17,7 @@
     <script src="https://unpkg.com/@movigo/core"></script>
     <script src="/dist/movigo.js"></script>
     <script src="https://unpkg.com/@movigo/list"></script>
+    <script src="https://unpkg.com/@movigo/focus"></script>
 </head>
 
 <body>
@@ -295,7 +296,7 @@
                 <h3>List plugin</h3>
                 <p>
                     <a href="https://github.com/movigo/list" target="_blank">List plugin</a> allow you
-                    to animate list elements with appropriate timing function, duration, delay and
+                    to animate list elements with customizable timing function, duration, delay and
                     initial position of elements.
                 </p>
             </div>
@@ -322,25 +323,16 @@
                 <p>
                     By running multiple animations simultaneously it is possible to create more complex effects,
                     such as a greater focus on an element (e.g. images).
+                    <a href="https://github.com/movigo/focus" target="_blank">Focus plugin</a> allow you
+                    to focus elements with customizable scaling and backdrop brightness .
                 </p>
             </div>
             <pre class="code"><code class="js">
-    selectedElement.style.zIndex = '2'
+    const images = document.querySelectorAll('img')
 
-    movigo.target(selectedElement)
-        .duration(.3)
-        .easing('cubic-bezier(0.34, 1.56, 0.64, 1)')
-        .to({ transform: 'scale(2.2, 2.2)' })
-        .animate()
-
-    for (const element of otherElements) {
-        element.style.zIndex = '1'
-    }
-
-    movigo.target(otherElements)
-        .duration(.3).easing('ease-in-out')
-        .to({ filter: 'brightness(60%) blur(1px)' })
-        .animate()
+    await movigo.target(images).focus({
+        element: 1 // Index of focused element.
+    }).animate()
             </code></pre>
         </div>
     </div>
@@ -519,31 +511,13 @@
   async function animation9 (element) {
     toggleAnimation.animation9 = !toggleAnimation.animation9
 
-    const duration = toggleAnimation.animation9 ? .3 : 2
-    const focusElement = element.nextElementSibling.querySelector(`img:nth-child(2)`)
-    const elements = Array.from(element.nextElementSibling.querySelectorAll('img'))
+    const elementIndex = toggleAnimation.animation9 ? 1 : 0
+    const duration = toggleAnimation.animation9 ? .3 : 1.5
+    const elements = element.nextElementSibling.querySelectorAll('img')
 
     await movigo.target(elements)
-      .duration(.25).easing('ease-in-out')
-      .to({ filter: 'brightness(100%)', transform: 'scale(1, 1)' })
-      .animate()
-
-    elements.splice(elements.indexOf(focusElement), 1)
-
-    focusElement.style.zIndex = '2'
-
-    movigo.target(focusElement)
-      .duration(duration).easing('cubic-bezier(0.34, 1.56, 0.64, 1)')
-      .to({ transform: 'scale(2.2, 2.2)' })
-      .animate()
-
-    for (const element of elements) {
-      element.style.zIndex = '1'
-    }
-
-    movigo.target(elements)
-      .duration(duration).easing('ease-in-out')
-      .to({ filter: 'brightness(60%) blur(1px)' })
+      .focus({ element: elementIndex })
+      .duration(duration)
       .animate()
   }
 
