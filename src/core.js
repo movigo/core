@@ -31,6 +31,10 @@ export function parameters () {
   return copyObject(defaultParameters)
 }
 
+/**
+ * Add a plugin in the library.
+ * @param plugin
+ */
 export function addPlugin (plugin) {
   checkBuiltInTypes(plugin, 'function')
 
@@ -136,7 +140,7 @@ function createOptionFunctions (elements, parameters) {
 }
 
 /**
- *
+ * Create the plugin chain functions.
  * @param {NodeList} elements
  * @param {object} parameters
  * @returns {object}
@@ -156,11 +160,12 @@ export function createPluginFunctions (elements, parameters) {
 /**
  * Add a keyframe for the animations in the style element.
  * @param {HTMLStyleElement} styleElement
- * @param {object} parameters
+ * @param {object} from
+ * @param {object} to
  * @returns {string}
  */
-function createKeyFrame (styleElement, parameters) {
-  const keyFrameName = createID(JSON.stringify({ ...parameters.from, ...parameters.to }))
+function createKeyFrame (styleElement, from, to) {
+  const keyFrameName = createID(JSON.stringify({ ...from, ...to }))
 
   if (styleElement.sheet.rules) {
     for (const keyFrame of Array.from(styleElement.sheet.rules)) {
@@ -171,8 +176,8 @@ function createKeyFrame (styleElement, parameters) {
   }
 
   styleElement.sheet.insertRule(`@keyframes ${keyFrameName} {
-    from { ${Object.keys(parameters.from).map(p => `${camelCaseToDashCase(p)}: ${parameters.from[p]}`).join(';')} }
-    to { ${Object.keys(parameters.to).map(p => `${camelCaseToDashCase(p)}: ${parameters.to[p]}`).join(';')} }
+    from { ${Object.keys(from).map(p => `${camelCaseToDashCase(p)}: ${from[p]}`).join(';')} }
+    to { ${Object.keys(to).map(p => `${camelCaseToDashCase(p)}: ${to[p]}`).join(';')} }
   }`)
 
   return keyFrameName
@@ -204,8 +209,8 @@ function mapSpecificParameters (parameters, i) {
 async function animate (element, parameters, styleElement, i) {
   if (element.style.animationPlayState !== 'running') {
     // Map any specific properties.
-    const { duration, easing, delay, loop } = mapSpecificParameters(parameters, i)
-    const keyFrameName = createKeyFrame(styleElement, parameters)
+    const { duration, easing, delay, loop, from, to } = mapSpecificParameters(parameters, i)
+    const keyFrameName = createKeyFrame(styleElement, from, to)
 
     element.style.animation = `${keyFrameName} ${duration}s ${easing} ${delay}s ${loop || 'infinite'}`
     element.style.animationIterationCount = typeof loop === 'undefined' ? 'infinite' : loop === 0 ? 1 : loop * 2
@@ -221,8 +226,8 @@ async function animate (element, parameters, styleElement, i) {
     })
 
     if (loop === 0) {
-      for (const property in parameters.to) {
-        element.style[property] = parameters.to[property]
+      for (const property in to) {
+        element.style[property] = to[property]
       }
     }
 
