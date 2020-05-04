@@ -2,7 +2,7 @@ site_name: Movigo
 site_url: https://movigo.cedoor.dev
 site_description: Movigo library core with base features to animate your DOM elements.
 site_author: Omar Desogus
-copyright: Copyright (c) 2020 Omar Desogus
+copyright: Copyright (c) 2020 <a href="https://cedoor.dev" target="_blank">Omar Desogus</a>
 
 extra:
   support:
@@ -21,6 +21,7 @@ theme:
     primary: blue-grey
     accent: teal
 nav:
+  - Main: index.md
   - Install: install.md
   - Usage: usage.md
   - Plugins:

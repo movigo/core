@@ -46,9 +46,8 @@
             <h1>Movigo.js</h1>
             <p>
                 Ultralight JS library to animate your DOM elements.
-                For the installation of the library read the
-                <a href="https://github.com/movigo/core#readme" target="_blank">README</a>
-                file on Github.
+                You can find library documentation on
+                <a href="http://movigo.rtfd.io/" target="_blank">http://movigo.rtfd.io/</a>.
             </p>
         </div>
     </div>
@@ -72,14 +71,14 @@
             <div>
                 <h3>Functions</h3>
                 <p>
-                    First function to call is always <b>target</b>, which takes a selector or a DOM element as input
-                    and return an object of functions. We can divide these functions into
-                    <b>action</b> functions and <b>option</b> functions (or simply actions and options).
-                    Every action or option return other actions and options, with a final function:
+                    First function to call is always <b>target</b> function, which takes a selector, a DOM element or more DOM
+                    elements as input and return an object of functions. We can divide these functions into
+                    <b>action</b> functions, <b>option</b> functions and <b>plugin</b> functions.
+                    Every action, option or plugin function return the same object of functions, with a final function:
                     <b>animate</b>, that plays the animation and return a
                     <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
                        target="_blank">promise</a>
-                    (fulfilled at the and of animation). Click on `play` button at top left to play animations.
+                    (fulfilled at the and of the created animations). Click on `play` button at top left to play animations.
                 </p>
             </div>
             <pre class="code"><code class="js">
@@ -93,6 +92,8 @@
     target.duration(.8) // Option function.
 
     target.to({ width: '200px' }) // Action function.
+
+    target.list() // List plugin function.
 
     // Create the animation and wait for the end.
     await target.duration(.8).to({ width: '200px' }).animate()
@@ -115,10 +116,10 @@
                 </p>
             </div>
             <pre class="code"><code class="js">
-    const animation = target.duration(.4)
+    const slowAnimation = target.duration(1)
 
-    await animation.to({ width: '100px' }).animate()
-    await animation.to({ height: '100px' }).animate()
+    await slowAnimation.to({ width: '100px' }).animate()
+    await slowAnimation.to({ height: '100px' }).animate()
             </code></pre>
         </div>
     </div>
@@ -131,10 +132,10 @@
             <div>
                 <h3>Actions</h3>
                 <p>
-                    Actions allow you to change CSS property values. There are currently two function:
-                    <b>to</b> and <b>from</b>. Both take an object containing CSS properties and they
-                    work like in a CSS keyframe: 'from' represent the initial state of the animation,
-                    'to' the final state. If 'from' function is not defined, the initial state is
+                    Action functions allow you to change CSS property values. There are currently two function:
+                    <b>to</b> and <b>from</b>. Both take an object containing CSS properties and they work like in
+                    a CSS keyframe: <b>from</b> values represent the initial state of the animation,
+                    <b>to</b> values represent the final state. If <b>from</b> function is not defined, the initial state is
                     represented by the current CSS target properties. To see a full list of available
                     actions you can also use <b>movigo.actions()</b> function.
                 </p>
@@ -158,9 +159,11 @@
             <div>
                 <h3>Options</h3>
                 <p>
-                    Options allow you to set some properties of the animations, such as duration,
-                    speed curve of the transition effect, delays or loops. In particular, a loop
-                    can be infinite or determined by a number.
+                    Option functions allow you to set some properties of the animations, such as duration,
+                    speed curve of the transition effect, delays or loops.
+                    The number parameter of <b>delay</b> and <b>duration</b> functions must be defined in seconds,
+                    <b>easing</b> function parameter values can be found in W3S documentation and <b>loop</b> function
+                    take a number of loops or nothing (infinite loop).
                     To see a full list of available options you can use <b>movigo.options()</b> function.
                 </p>
             </div>
@@ -191,10 +194,10 @@
         </div>
         <div>
             <div>
-                <h3>Specific options</h3>
+                <h3>Specific parameters</h3>
                 <p>
-                    Option functions can get a function as parameter, in which i-th element can be used to
-                    define element specific options.
+                    Option and action functions can get a function as parameter, in which i-th element can be used to
+                    define specific element options or actions.
                 </p>
             </div>
             <pre class="code"><code class="js">
@@ -429,7 +432,7 @@
       height: '50px'
     }).animate()
 
-    const animation = target.duration(.4)
+    const animation = target.duration(1)
 
     await animation.to({ width: '100px' }).animate()
     await animation.to({ height: '100px' }).animate()

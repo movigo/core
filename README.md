@@ -13,18 +13,24 @@
     <a href="https://david-dm.org/movigo/core?type=dev" target="_blank">
         <img src="https://img.shields.io/david/dev/movigo/core.svg?style=flat-square">
     </a>
+    <a href='https://movigo.readthedocs.io/en/latest/?badge=latest'>
+        <img src='https://readthedocs.org/projects/movigo/badge/?version=latest' alt='Documentation Status' />
+    </a>
 </p>
 
 Movigo is a light and modern JS animation library which makes the creation of DOM element animations easier.
 Movigo use new ECMAScript features and the so-called method chaining technique, and save the state of the animation in each function.
 This means that you can break the chain and create new chains with additional functions by building different animations.
-Library functions allow you to change CSS property values or to set some animation options.
-You can find more details and some use cases on the Movigo [website](https://movigo.cedoor.dev).
+
+Library functions allow you to change CSS property values to animate or to set some animation options.
+It is also possible to extend the library with a plugin system that allows you to add functions.
+
+You can find some use cases on [https://movigo.cedoor.dev](https://movigo.cedoor.dev) and
+documentation on [http://movigo.rtfd.io/](http://movigo.rtfd.io/).
 
 ________________________________
 
 ## :paperclip: Table of Contents
-- :hammer: [Install](#hammer-install)
 - :chart_with_upwards_trend: [Development](#chart_with_upwards_trend-development)
   - :scroll: [Rules](#scroll-rules)
     - [Commits](#commits)
@@ -32,20 +38,6 @@ ________________________________
 - :page_facing_up: [License](#page_facing_up-license)
 - :telephone_receiver: [Contacts](#telephone_receiver-contacts)
   - :boy: [Developers](#boy-developers)
-
-## :hammer: Install
-
-### npm
-
-You can install movigo package with npm:
-
-    npm install @movigo/core --save
-    
-### CDN
-
-You can also load it using a \<script> using the unpkg CDN:
-    
-    <script src="https://unpkg.com/@movigo/core"></script>
 
 ## :chart_with_upwards_trend: Development
 
