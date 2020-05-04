@@ -1,0 +1,32 @@
+site_name: Movigo
+site_url: https://movigo.cedoor.dev
+site_description: Movigo library core with base features to animate your DOM elements.
+site_author: Omar Desogus
+copyright: Copyright (c) 2020 Omar Desogus
+
+extra:
+  support:
+    email: me@cedoor.dev
+    website: https://movigo.cedoor.dev
+  search:
+    language: 'en'
+    tokenizer: '[\s]+'
+
+repo_name: movigo/core
+repo_url: https://github.com/movigo/core
+
+theme:
+  name: material
+  palette:
+    primary: blue-grey
+    accent: teal
+nav:
+  - Install: install.md
+  - Usage: usage.md
+  - Plugins: plugins.md
+    - List: plugins/list-plugin.md
+    - Focus: plugins/focus-plugin.md
+    - Drawer: plugins/drawer-plugin.md
+
+plugins:
+  - search
