@@ -23,7 +23,7 @@ theme:
 nav:
   - Install: install.md
   - Usage: usage.md
-  - Plugins: plugins.md
+  - Plugins:
     - List: plugins/list-plugin.md
     - Focus: plugins/focus-plugin.md
     - Drawer: plugins/drawer-plugin.md
