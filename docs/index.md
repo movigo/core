@@ -8,13 +8,3 @@ Library functions allow you to change CSS property values to animate or to set s
 It is also possible to extend the library with a plugin system that allows you to add functions.
 
 You can find some use cases on [https://movigo.cedoor.dev](https://movigo.cedoor.dev).
-
-## Table of Contents
-
-1. [Main](https://movigo.readthedocs.io/en/latest)
-2. [Install](https://movigo.readthedocs.io/en/latest/install)
-3. [Usage](https://movigo.readthedocs.io/en/latest/usage)
-4. Plugins:
-    1. [List](https://movigo.readthedocs.io/en/latest/plugins/list-plugin)
-    2. [Focus](https://movigo.readthedocs.io/en/latest/plugins/focus-plugin)
-    3. [Drawer](https://movigo.readthedocs.io/en/latest/plugins/drawer-plugin)

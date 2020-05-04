@@ -11,6 +11,7 @@ as parameter. This parameter can be passed as a string selector or as DOM elemen
 `querySelector` or `querySelectorAll` JavaScript functions.
 
 ```js
+
     const target = movigo.target('#circle')
     
     // or:
@@ -22,6 +23,7 @@ as parameter. This parameter can be passed as a string selector or as DOM elemen
 
     const elements = document.querySelectorAll('div')
     const target = movigo.target(elements)
+
 ```
 
 The `target` function return an object containing the functions necessary to create the animations,
@@ -37,6 +39,7 @@ In this way it is possible to create function chains with the
 [method chaining](https://en.wikipedia.org/wiki/Method_chaining) technique.
 
 ```js
+
     target.duration(.8) // Option function.
     
     target.to({ width: '200px' }) // Action function.
@@ -45,6 +48,7 @@ In this way it is possible to create function chains with the
     
     // Create the animation and wait for the end.
     await target.duration(.8).to({ width: '200px' }).animate()
+
 ```
 
 ## Animation parameters
@@ -56,6 +60,7 @@ the creation of the animations and correspond to the options
 properties (set with the action or the plugin functions).
 
 ```js
+
     movigo.parameters() // Return default parameters.
 
     /* Default state of parameter object.
@@ -68,12 +73,14 @@ properties (set with the action or the plugin functions).
         to: {}
     }
     */
+
 ```
 
 A new state of this object is saved for each function of the chain, making it
 possible to reuse a particular state to create multiple animations.
 
 ```js
+
     const slowAnimation = target.duration(10) // 10 seconds.
     
     slowAnimation.parameters() // Return chain-specific parameters.
@@ -92,6 +99,7 @@ possible to reuse a particular state to create multiple animations.
     // Create two different animations with same duration (saved in slowAnimation object scope).
     await slowAnimation.to({ width: 200 }).animate()
     await slowAnimation.to({ height: 200 }).animate()
+
 ```
 
 ## Actions
@@ -103,6 +111,7 @@ a CSS keyframe: `from` values represent the initial state of the animation,
 represented by the current CSS target properties.
 
 ```js
+
     movigo.actions() // Return a list of available action functions as strings.
 
     /*
@@ -116,6 +125,7 @@ represented by the current CSS target properties.
         width: 200,
         height: 200
     }).animate()
+
 ```
 
 ## Options
@@ -127,6 +137,7 @@ The number parameter of `delay` and `duration` functions must be defined in seco
 take a number of loops or nothing (infinite loop).
 
 ```js
+
     movigo.options() // Return a list of available option functions as strings.
 
     /*
@@ -137,6 +148,7 @@ take a number of loops or nothing (infinite loop).
         .duration(.5).delay(1).easing('ease-in-out').loop(2)
         .to({ opacity: .5 })
         .animate()
+
 ```
 
 ## Specific parameters
@@ -145,12 +157,14 @@ Option and action functions can get a function as parameter, in which the i-th e
 or the element itself can be used to define specific element options or actions.
 
 ```js
+
     const target = movigo.target('div')
 
     await target
         .delay((i, element) => i * .05) // Define specific delay for each element. 
         .easing('cubic-bezier(0.4, 0.0, 0.2, 1)')
         .to({ opacity: 1 }).animate()
+
 ```
 
 ## Plugins
@@ -164,6 +178,7 @@ Below is an example of the very simple code of the `list` plugin, which
 sets the parameters to create animations for lists.
 
 ```js
+
     /**
      * Prepare animation parameters to create a list animation.
      * @param {Element[] | NodeList} elements of the target.
@@ -198,6 +213,7 @@ sets the parameters to create animations for lists.
     await movigo.target('div').list({
         x: -100, y: 0, // Horizontal animation, from left.
     }).animate()
+
 ```
 
 The plugin function must have `elements` and `animationParameters` parameters (ops! sorry for the repetition),
