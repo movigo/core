@@ -21,7 +21,7 @@ You can also load it with CDNs:
 
 ## Usage
 
-Focus plugin allows you to create animations to focus
+[Focus plugin](https://github.com/movigo/focus) allows you to create animations to focus
 particular elements by scaling an element and obscuring the
 other background elements.
 

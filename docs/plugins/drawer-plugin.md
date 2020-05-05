@@ -21,7 +21,7 @@ You can also load it with CDNs:
 
 ## Usage
 
-Drawer plugin allows you to animate sidebars
+[Drawer plugin](https://github.com/movigo/drawer) allows you to animate sidebars
 by creating a slide effect and obscuring the background container.
 
 It is necessary to select a sidenav as target, and optionally

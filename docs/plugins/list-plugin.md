@@ -21,7 +21,7 @@ You can also load it with CDNs:
 
 ## Usage
 
-List plugin allows you to create and manage animations for lists of elements,
+[List plugin](https://github.com/movigo/list) allows you to create and manage animations for lists of elements,
 with slide-in and fade-in effects.
 
 It is possible to define initial coordinates and set a duration and an easing function
