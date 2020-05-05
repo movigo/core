@@ -300,15 +300,16 @@
             <div>
                 <h3>List plugin</h3>
                 <p>
-                    <a href="https://github.com/movigo/list" target="_blank">List plugin</a> allow you
-                    to animate list elements with customizable timing function, duration, delay and
-                    initial position of elements.
+                    <a href="https://github.com/movigo/list" target="_blank">List plugin</a>
+                    allows you to create and manage animations for lists of elements,
+                    with slide-in and fade-in effects.
                 </p>
             </div>
             <pre class="code"><code class="js">
     const elements = document.querySelectorAll('ul > li')
+    const target = movigo.target(elements)
 
-    await movigo.target(elements).list().animate()
+    await target.list().animate()
             </code></pre>
         </div>
     </div>
@@ -326,16 +327,16 @@
             <div>
                 <h3>Focus</h3>
                 <p>
-                    By running multiple animations simultaneously it is possible to create more complex effects,
-                    such as a greater focus on an element (e.g. images).
-                    <a href="https://github.com/movigo/focus" target="_blank">Focus plugin</a> allow you
-                    to focus elements with customizable scaling and backdrop brightness .
+                    <a href="https://github.com/movigo/focus" target="_blank">Focus plugin</a> allows you to
+                    create animations to focus particular elements by scaling an element and
+                    obscuring the other background elements.
                 </p>
             </div>
             <pre class="code"><code class="js">
     const images = document.querySelectorAll('img')
+    const target = movigo.target(images)
 
-    await movigo.target(images).focus({
+    await target.focus({
         element: 1 // Index of focused element.
     }).animate()
             </code></pre>
@@ -387,14 +388,16 @@
             <div>
                 <h3>Drawer</h3>
                 <p>
-                    <a href="https://github.com/movigo/drawer" target="_blank">Drawer plugin</a> allow you to create
-                    drawer animations, to set position and width or to open and close a sidenav.
+                    <a href="https://github.com/movigo/drawer" target="_blank">Drawer plugin</a> allows you to
+                    animate sidebars by creating a slide effect and obscuring the background container.
                 </p>
             </div>
             <pre class="code"><code class="js">
     const sidenav = document.querySelector('.sidenav')
+    const container = document.querySelector('.container')
+    const target = movigo.target([sidenav, container])
 
-    await movigo.target(sidenav).drawer().animate()
+    await target.drawer().animate()
             </code></pre>
         </div>
     </div>
