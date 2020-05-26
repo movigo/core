@@ -41,8 +41,6 @@ In this way it is possible to create function chains with the
   await target.duration(.8).to({ width: '200px' }).animate()
 ```
 
-## Animation parameters
-
 Each chain function processes and updates an internal object, containing the `animation parameters`. This object is used in the last `animate` function to create the animations and it contains the following properties: `delay`, `duration`, `easing` and `loop` set with option functions, and `to` and `from` set with action functions. Plugin functions can set all the animation parameters.
 
 ```js
@@ -83,8 +81,6 @@ possible to reuse a particular state to create multiple animations.
   await slowAnimation.to({ width: 200 }).animate()
   await slowAnimation.to({ height: 200 }).animate()
 ```
-
-## Specific parameters
 
 Option and action functions can also get a function as parameter, in which the i-th element index or the element itself can be used to define specific element options or actions.
 
