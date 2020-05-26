@@ -21,11 +21,9 @@ You can also load it with CDNs:
 
 ## Usage
 
-[List plugin](https://github.com/movigo/list) allows you to create and manage animations for lists of elements,
-with slide-in and fade-in effects.
+[List plugin](https://github.com/movigo/list) function creates an animation for lists of elements with slide-in and fadein effects. In particular, it create an animation for each element of the list using the same keyframe and adequately defining `transform` and `opacity` CSS properties, and start each element with a delay defined according to the duration of the animation (1/3 of the duration).
 
-It is possible to define initial coordinates and set a duration and an easing function
-for each element, while the delay between the elements of the list is defined according to the duration.
+It is possible to define the initial coordinates, the duration and the easing function for each element. Default coordinates and duration are defined assuming a large transition area, while the default easing function simulates a fast start and a constant decelaration of the elements.
 
 ```js
   const elements = document.querySelectorAll('li')

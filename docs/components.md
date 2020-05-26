@@ -1,14 +1,8 @@
-# Usage
-
-Movigo is a very light and compact library, consisting of a core and optionally extendible
-with external plugins. The library core consists of some simple functions, which offer
-everything you need to create simple and complex animations using CSS keyframes.
+# Components 
 
 ## Target
 
-The entry point of the library is the `target` function, which requires DOM element(s) to animate
-as parameter. This parameter can be passed as a string selector or as DOM element(s) using
-`querySelector` or `querySelectorAll` JavaScript functions.
+The entry point of the library is the `target` function, which requires one or more DOM elements as parameter. The parameter can be passed as a string selector or using `querySelector` or `querySelectorAll` JavaScript functions.
 
 ```js
   const target = movigo.target('#circle')
@@ -27,9 +21,9 @@ as parameter. This parameter can be passed as a string selector or as DOM elemen
 The `target` function return an object containing the functions necessary to create the animations,
 that can be divided in:
 
-* Option functions: `delay`, `duration`, `easing`, `loop`;
-* Action functions `from`, `to`;
-* Plugin functions: `list`, `focus`, `drawer`.
+* Option functions:  determine the behavior of animations (`delay`, `duration`, `easing`, `loop`);
+* Action functions: determine animation stages and which CSS properties must be animated (`from`, `to`);
+* Plugin functions: add features to core library (`list`, `focus`, `drawer`).
 
 Each of these functions, in turn, returns the same function object with an additional
 `animate` function, used precisely as final function to start the animation.
@@ -49,16 +43,12 @@ In this way it is possible to create function chains with the
 
 ## Animation parameters
 
-Each function updates an internal object, saved from time to time,
-containing the `parameters`. The `parameters` object contain the values necessary for
-the creation of the animations and correspond to the options
-(set with option or plugin functions) and to the CSS
-properties (set with action or plugin functions).
+Each chain function processes and updates an internal object, containing the `animation parameters`. This object is used in the last `animate` function to create the animations and it contains the following properties: `delay`, `duration`, `easing` and `loop` set with option functions, and `to` and `from` set with action functions. Plugin functions can set all the animation parameters.
 
 ```js
   movigo.parameters() // Return default parameters.
 
-  /* Default state of parameter object.
+  /* Default state of the animation parameter object.
   {
     duration: 0.3,
     delay: 0,
@@ -94,13 +84,22 @@ possible to reuse a particular state to create multiple animations.
   await slowAnimation.to({ height: 200 }).animate()
 ```
 
+## Specific parameters
+
+Option and action functions can also get a function as parameter, in which the i-th element index or the element itself can be used to define specific element options or actions.
+
+```js
+  const target = movigo.target('div')
+
+  await target
+    .delay((i, element) => i * .05) // Define specific delay for each element. 
+    .easing('cubic-bezier(0.4, 0.0, 0.2, 1)')
+    .to({ opacity: 1 }).animate()
+```
+
 ## Actions
 
-Action functions allow you to change CSS property values. There are currently two function:
-`to` and `from`. Both take an object containing CSS properties, and they work like in
-a CSS keyframe: `from` values represent the initial state of the animation,
-`to` values represent the final state. If `from` function is not defined, the initial state is
-represented by the current CSS target properties.
+Action functions allow you to determine animation stages and which CSS properties must be animated. There are currently two function: `to` and `from`. Both take an object containing CSS properties and work like in a CSS keyframe: `from` properties represent the initial state of the animation and `to` properties represent the final state. If `from` function is not defined, the initial state is represented by the current CSS properties of the elements to animate.
 
 ```js
   movigo.actions() // Return a list of available action functions as strings.
@@ -120,11 +119,7 @@ represented by the current CSS target properties.
 
 ## Options
 
-Option functions allow you to set some properties of the animations, such as duration,
-speed curve of the transition effect, delays or loops.
-The number parameter of `delay` and `duration` functions must be defined in seconds, `easing` function parameter values
-can be found in [W3S documentation](https://www.w3schools.com/CSSref/css3_pr_animation-timing-function.asp)
-and `loop` function take a number of loops or nothing (infinite loop).
+Option functions allow you to determine the behavior of animations with some properties of the animations, such as duration, speed curve of the transition effect, delays or loops. The number parameter of `delay` and `duration` functions must be defined in seconds, `easing` function parameter values can be found in [W3S documentation](https://www.w3schools.com/CSSref/css3_pr_animation-timing-function.asp) and `loop` function take a number of loops or nothing (if defined without parameters set an infinite loop).
 
 ```js
   movigo.options() // Return a list of available option functions as strings.
@@ -139,29 +134,11 @@ and `loop` function take a number of loops or nothing (infinite loop).
     .animate()
 ```
 
-## Specific parameters
-
-Option and action functions can get a function as parameter, in which the i-th element index
-or the element itself can be used to define specific element options or actions.
-
-```js
-  const target = movigo.target('div')
-
-  await target
-    .delay((i, element) => i * .05) // Define specific delay for each element. 
-    .easing('cubic-bezier(0.4, 0.0, 0.2, 1)')
-    .to({ opacity: 1 }).animate()
-```
-
 ## Plugins
 
-Movigo allows you to extend the core of the library with additional functions,
-for example to manage complex animations in a simple way.
-The `addPlugin` function takes a simple function as input, which will
-be added to existing plugins and then exposed in the functions chain object.
+Movigo allows you to extend the core of the library with additional functions, for example to manage complex animations in a simple way. The `addPlugin` function takes a simple function as input, which will be added to existing plugins and then exposed in the function chain object.
 
-Below is an example of very simple code of the `list` plugin, which
-sets the parameters to create animations for lists.
+Below is an example of very simple code of the `list` plugin, which sets the parameters to create animations for lists.
 
 ```js
   /**
@@ -200,10 +177,6 @@ sets the parameters to create animations for lists.
   }).animate()
 ```
 
-The plugin function must have `elements` and `animationParameters` parameters (ops! sorry for the repetition),
-and if necessary it is possible to add other specific-plugin parameters (like `options` in the example).
-Note that the animation parameters can also be updated by simply calling the action
-and option functions after the plugin function, so that they are overwritten.
+A plugin function must have internal `elements` and `animationParameters` parameters, and possibly you can add other parameters (like `options` in the example) usable when plugin function is called as chain function. Clearly, the `animation parameters` can also be updated by simply calling the action and option functions after the plugin function, so that they are overwritten.
 
-Therefore, a plugin is a function that changes the state of the animation parameters,
-allowing the construction of complex animations in a few lines of code.
+Therefore, a plugin is a function that changes the state of the animation parameters, allowing you to create complex animations in a few lines of code.

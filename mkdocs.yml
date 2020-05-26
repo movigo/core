@@ -21,9 +21,10 @@ theme:
     primary: blue-grey
     accent: teal
 nav:
-  - Main: index.md
+  - Introduction: index.md
   - Install: install.md
-  - Usage: usage.md
+  - Features: features.md
+  - Components: components.md
   - Plugins:
     - List: plugins/list-plugin.md
     - Focus: plugins/focus-plugin.md
