@@ -1,4 +1,4 @@
-# What is Movigo
+# Introduction
 
 From the beginning of the Web, when websites were still static and not very interactive, technologies have evolved exponentially, and the care for the user interface has taken on an increasingly important role. In a context where the user is over stimulated by a huge amount of content, creating an interface that is able to capture and keep the user’s attention is essential.
 
