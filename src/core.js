@@ -24,7 +24,7 @@ const defaultParameters = {
 export const pluginFunctions = []
 
 /**
- *
+ * Return the default parameters.
  * @returns {object}
  */
 export function parameters () {
